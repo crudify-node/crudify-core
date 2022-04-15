@@ -10,6 +10,7 @@
     "dev": "nodemon dist"
   },
   "dependencies": {
+    "module-alias": "^2.2.2",
     "typescript": "^4.6.3"
   },
   "devDependencies": {
@@ -22,6 +23,9 @@
     "lint-staged": "^12.3.8",
     "nodemon": "^2.0.15",
     "prettier": "^2.6.2"
+  },
+  "_moduleAliases": {
+    "@root"      : "."
   },
   "lint-staged": {
     "*.{ts,js}": "eslint --cache --fix",
