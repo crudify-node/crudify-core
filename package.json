@@ -22,5 +22,11 @@
     "lint-staged": "^12.3.8",
     "nodemon": "^2.0.15",
     "prettier": "^2.6.2"
+  },
+  "lint-staged": {
+    "*.{ts,js}": "eslint --cache --fix",
+    "*.{ts,js,css,md}": "prettier --write",
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
   }
 }
