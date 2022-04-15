@@ -1,0 +1,19 @@
+{
+  "name": "crudify",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/abhi-824/crudify.git",
+  "author": "Naman Gogia <namangogia2001@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn tsc",
+    "dev": "nodemon dist"
+  },
+  "dependencies": {
+    "typescript": "^4.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.24",
+    "nodemon": "^2.0.15"
+  }
+}

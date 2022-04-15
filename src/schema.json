@@ -1,0 +1,22 @@
+{
+  "Models":[
+      {
+          "name":"User",
+          "attributes":{
+              "StaticFields":[
+                  {
+                      "name":"name",
+                      "type":"String"
+                  }
+              ],
+              "RelationalFields":[
+                  {
+                      "connection":"Product",
+                      "foriegnKeyName":"id",
+                      "type":"1-1"
+                  }
+              ]
+          }
+      }
+  ]
+}
