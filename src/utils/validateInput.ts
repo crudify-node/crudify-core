@@ -1,3 +1,3 @@
-export const validateInput =(inp:any)=>{
-    return 0;   
-}
+export const validateInput = (inp: any) => {
+  return 0;
+};

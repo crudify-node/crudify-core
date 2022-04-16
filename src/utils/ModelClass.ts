@@ -1,22 +1,24 @@
 export enum type {
-    ONETOONE,
-    ONETOMANY
+  ONETOONE,
+  ONETOMANY,
 }
 export interface StaticField {
-    name: String,
-    type: String,
-    isUnique?: Boolean  
+  name: string;
+  type: string;
+  isUnique?: boolean;
 }
 export interface RelationalField {
-    connection: string,
-    foreignKey: string,
-    type: type
+  connection: string;
+  foreignKey: string;
+  type: type;
 }
 export class Model {
-    name!: String;
-    attributes!: { staticField: Array<StaticField>, relationalField: Array<RelationalField> }
-    constructor(name:string){
-        this.name=name as string;
-    }
-
+  name!: string;
+  attributes!: {
+    staticField: Array<StaticField>;
+    relationalField: Array<RelationalField>;
+  };
+  constructor(name: string) {
+    this.name = name as string;
+  }
 }
