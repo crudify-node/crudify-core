@@ -10,10 +10,12 @@
     "dev": "nodemon dist"
   },
   "dependencies": {
+    "fs-extra": "^10.0.1",
     "module-alias": "^2.2.2",
     "typescript": "^4.6.3"
   },
   "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
     "@types/node": "^17.0.24",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
@@ -25,7 +27,7 @@
     "prettier": "^2.6.2"
   },
   "_moduleAliases": {
-    "@root"      : "."
+    "@root": "."
   },
   "lint-staged": {
     "*.{ts,js}": "eslint --cache --fix",
