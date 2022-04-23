@@ -1,0 +1,68 @@
+{
+  "name": "starter-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^3.11.1",
+    "@sendgrid/mail": "^7.6.2",
+    "bcrypt": "^5.0.1",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.6",
+    "cookie-session": "^2.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "faker": "5.5.3",
+    "global": "^4.4.0",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "module-alias": "^2.2.2",
+    "node": "^17.7.2",
+    "passport": "^0.5.2",
+    "passport-local": "^1.0.0",
+    "prisma": "^3.11.1",
+    "source-map-support": "^0.5.21",
+    "ts-node": "^10.7.0",
+    "tsc": "^2.0.4",
+    "typescript": "^4.6.3"
+  },
+  "lint-staged": {
+    "*.{ts,js}": "eslint --cache --fix",
+    "*.{ts,js,css,md}": "prettier --write",
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
+  },
+  "_moduleAliases": {
+    "~": "dist/"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "start": "node dist",
+    "build": "yarn tsc",
+    "dev": "nodemon dist",
+    "ts-node": "ts-node --compiler-options {\\\"module\\\":\\\"commonjs\\\"}",
+    "migrate": "prisma migrate dev",
+    "seed": "prisma db seed --preview-feature",
+    "postinstall": "npm run build"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/faker": "5.5.9",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^17.0.23",
+    "@typescript-eslint/eslint-plugin": "^5.17.0",
+    "@typescript-eslint/parser": "^5.17.0",
+    "eslint": "^8.12.0",
+    "eslint-config-prettier": "^8.5.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.7",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.6.1"
+  }
+}

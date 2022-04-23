@@ -1,5 +1,5 @@
 import * as data from "./schema.json";
-import * as fs from "fs";
+import * as fse from "fs-extra";
 import * as path from "path";
 import { validateInput } from "./utils/validateInput";
 import { Model, RelationalField, StaticField, type } from "./utils/ModelClass";
@@ -32,31 +32,8 @@ for (const dataModel of dataModels) {
   };
 }
 
-const appFolderName = path.join(__dirname, "../app");
-console.log(appFolderName);
+// Create starter backend template
+const sourceFolderName = path.join(__dirname, "../src/assets/starter");
+const destFolderName = path.join(__dirname, "../app");
 
-// Check if the folder exists else create it
-try {
-  if (!fs.existsSync(appFolderName)) {
-    fs.mkdirSync(appFolderName);
-  }
-} catch (err) {
-  console.log(err);
-}
-
-// Check if demo file exists else create a demo file
-const content = `datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-}
-
-generator client {
-    provider = "prisma-client-js"
-}`;
-
-fs.writeFile(path.join(appFolderName, "/schema.prisma"), content, (err) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-});
+fse.copySync(sourceFolderName, destFolderName);
