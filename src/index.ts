@@ -30,7 +30,10 @@ for (const dataModel of dataModels) {
     relationalField: relationalFields,
     staticField: staticFields,
   };
+  model.restructure()
+  models.push(model);
 }
+console.dir(models, { depth: null });
 
 // Create starter backend template
 const sourceFolderName = path.join(__dirname, "../src/assets/starter");

@@ -7,6 +7,10 @@
                   {
                       "name":"name",
                       "type":"String"
+                  },
+                  {
+                      "name":"abho",
+                      "type":"ass"
                   }
               ],
               "RelationalFields":[
