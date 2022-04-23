@@ -23,21 +23,31 @@ export class Model {
     this.name = name as string;
     // this.restructure();
   }
-  restructure() {
+  restructure(models: Array<Model>) {
     let staticFieldConversionString = "";
     for (const staticField of this.attributes.staticField) {
       staticFieldConversionString += `${staticField.name} ${staticField.type} ${
         staticField.isUnique ? "@unique" : ""
       } \n`;
     }
-    let relationalFieldConversionString ="";
-    for(const relationalField of this.attributes.relationalField){
-      relationalFieldConversionString+=`{relationalField.connection} {relationalField.connection}`;
+    let relationalFieldConversionString = "";
+    for (const relationalField of this.attributes.relationalField) {
+      relationalFieldConversionString += `${relationalField.connection}id Int `;
+      relationalFieldConversionString +=`\n ${relationalField.connection} ${relationalField.connection} @relation(fields: [${relationalField.connection}Id], references: [id])`;
+      const connectedModel: Model | undefined = models.find(
+        (model) => model.name === "string 1"
+      );
+      if (connectedModel) {
+        connectedModel.magicString += `${relationalField.connection} ${
+          relationalField.connection
+        } ${
+          relationalField.type === ("ONETOONE" as unknown as type) ? "" : "[]"
+        }`;
+      } 
     }
     this.magicString = `Model ${this.name} {
       ${staticFieldConversionString}\n
       ${relationalFieldConversionString}
     } `;
-
   }
 }

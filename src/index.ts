@@ -30,7 +30,7 @@ for (const dataModel of dataModels) {
     relationalField: relationalFields,
     staticField: staticFields,
   };
-  model.restructure()
+  model.restructure(models)
   models.push(model);
 }
 console.dir(models, { depth: null });
