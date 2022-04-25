@@ -23,31 +23,50 @@ export class Model {
     this.name = name as string;
     // this.restructure();
   }
-  restructure(models: Array<Model>) {
+  private staticFieldConversion(): string {
     let staticFieldConversionString = "";
+
     for (const staticField of this.attributes.staticField) {
       staticFieldConversionString += `${staticField.name} ${staticField.type} ${
         staticField.isUnique ? "@unique" : ""
       } \n`;
     }
+
+    return staticFieldConversionString;
+  }
+  private relationalFieldConversion(models: Array<Model>): string {
     let relationalFieldConversionString = "";
+
     for (const relationalField of this.attributes.relationalField) {
-      relationalFieldConversionString += `${relationalField.connection}id Int `;
-      relationalFieldConversionString +=`\n ${relationalField.connection} ${relationalField.connection} @relation(fields: [${relationalField.connection}Id], references: [id])`;
+      relationalFieldConversionString += `${relationalField.connection}Id Int `;
+      relationalFieldConversionString += `\n ${relationalField.connection} ${relationalField.connection} @relation(fields: [${relationalField.connection}Id], references: [id])`;
+
       const connectedModel: Model | undefined = models.find(
-        (model) => model.name === "string 1"
+        (model) => model.name === relationalField.connection
       );
+
       if (connectedModel) {
-        connectedModel.magicString += `${relationalField.connection} ${
-          relationalField.connection
-        } ${
-          relationalField.type === ("ONETOONE" as unknown as type) ? "" : "[]"
-        }`;
-      } 
+        if (connectedModel.magicString) {
+          console.log({connectedModel})
+          connectedModel.magicString.slice(0,-2);
+          console.log({connectedModel})
+          connectedModel.magicString += `${this.name} ${this.name} ${
+            relationalField.type === ("ONETOONE" as unknown as type) ? "" : "[]"
+          }`;
+        }
+      }
     }
-    this.magicString = `Model ${this.name} {
+    return relationalFieldConversionString;
+  }
+  restructure(models: Array<Model>) {
+    const staticFieldConversionString: string = this.staticFieldConversion();
+    const relationalFieldConversionString: string =
+      this.relationalFieldConversion(models);
+
+    this.magicString = `model ${this.name} {
+      id Int @id @default(autoincrement())\n
       ${staticFieldConversionString}\n
-      ${relationalFieldConversionString}
-    } `;
+      ${relationalFieldConversionString}\n
+    }`;
   }
 }

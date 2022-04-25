@@ -1,5 +1,18 @@
 {
   "Models":[
+    {
+        "name":"Product",
+        "attributes":{
+            "StaticFields":[
+                {
+                    "name":"name",
+                    "type":"String"
+                }
+            ],
+            "RelationalFields":[
+            ]
+        }
+      },
       {
           "name":"User",
           "attributes":{
@@ -10,7 +23,8 @@
                   },
                   {
                       "name":"abho",
-                      "type":"ass"
+                      "type":"String",
+                      "isUnique":true
                   }
               ],
               "RelationalFields":[
