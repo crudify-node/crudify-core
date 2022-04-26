@@ -39,7 +39,8 @@ generator client {
 `;
 
 for(const model of models){
-  initStringSchema+=model.magicString;
+  model.generateSchema();
+  initStringSchema+=model.initString;
 }
 
 

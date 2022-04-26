@@ -31,7 +31,7 @@
                   {
                       "connection":"Product",
                       "foriegnKeyName":"id",
-                      "type":"1-1"
+                      "type":"ONETOONE"
                   }
               ]
           }
