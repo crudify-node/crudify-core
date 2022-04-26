@@ -14,40 +14,66 @@ export interface RelationalField {
 }
 export class Model {
   name!: string;
-  magicString!: string;
+  schemaArray: Array<string> = [];
+  initString!: string;
   attributes!: {
     staticField: Array<StaticField>;
     relationalField: Array<RelationalField>;
   };
   constructor(name: string) {
     this.name = name as string;
-    // this.restructure();
+  }
+  private staticFieldConversion(){
+
+    for (const staticField of this.attributes.staticField) {
+      this.schemaArray.push(
+        `${staticField.name} ${staticField.type} ${
+          staticField.isUnique ? "@unique" : ""
+        } \n`
+      );
+    }
+
+  }
+  private relationalFieldConversion(models: Array<Model>) {
+    for (const relationalField of this.attributes.relationalField) {
+      this.schemaArray.push(
+        `${relationalField.connection.toLowerCase()}Id Int `
+      );
+      this.schemaArray.push(
+        `\n ${relationalField.connection.toLowerCase()} ${
+          relationalField.connection
+        } @relation(fields: [${relationalField.connection.toLowerCase()}Id], references: [id])`
+      ); 
+      const connectedModel: Model | undefined = models.find(
+        (model) => model.name === relationalField.connection
+      );
+
+      if (connectedModel) {
+        connectedModel.schemaArray.push(
+          `${this.name} ${this.name} ${
+            relationalField.type === ("ONETOONE" as unknown as type) ? "?" : "[]"
+          }`
+        );
+      }
+    }
   }
   restructure(models: Array<Model>) {
-    let staticFieldConversionString = "";
-    for (const staticField of this.attributes.staticField) {
-      staticFieldConversionString += `${staticField.name} ${staticField.type} ${
-        staticField.isUnique ? "@unique" : ""
-      } \n`;
+    this.staticFieldConversion();
+    
+    this.relationalFieldConversion(models);
+
+  }
+  generateSchema(){
+    this.initString = `model ${this.name} {
+      id Int @id @default(autoincrement())\n
+    `;
+    console.log(this.schemaArray)
+    for(const schemaString of this.schemaArray)
+    {
+      this.initString+=schemaString;
     }
-    let relationalFieldConversionString = "";
-    for (const relationalField of this.attributes.relationalField) {
-      relationalFieldConversionString += `${relationalField.connection}id Int `;
-      relationalFieldConversionString +=`\n ${relationalField.connection} ${relationalField.connection} @relation(fields: [${relationalField.connection}Id], references: [id])`;
-      const connectedModel: Model | undefined = models.find(
-        (model) => model.name === "string 1"
-      );
-      if (connectedModel) {
-        connectedModel.magicString += `${relationalField.connection} ${
-          relationalField.connection
-        } ${
-          relationalField.type === ("ONETOONE" as unknown as type) ? "" : "[]"
-        }`;
-      } 
-    }
-    this.magicString = `Model ${this.name} {
-      ${staticFieldConversionString}\n
-      ${relationalFieldConversionString}
-    } `;
+    this.initString+='\n}\n';
   }
 }
+
+// CONVERT STRING TO ARRAYS OF STRINGS AND FINALLY USE THIS ARRAY

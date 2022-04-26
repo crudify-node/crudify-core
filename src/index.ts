@@ -3,40 +3,54 @@ import * as fse from "fs-extra";
 import * as path from "path";
 import { validateInput } from "./utils/validateInput";
 import { Model, RelationalField, StaticField, type } from "./utils/ModelClass";
+import { getRelationalFields, getStaticFields } from "./utils/getFields";
 
 validateInput(data);
+
 const dataModels = data.Models;
 const models: Array<Model> = [];
+
 for (const dataModel of dataModels) {
   const model: Model = new Model(dataModel.name);
-  const staticFields: Array<StaticField> = [];
-  for (const staticField of dataModel.attributes.StaticFields) {
-    const newStaticField: StaticField = {
-      name: staticField.name,
-      type: staticField.type,
-    };
-    staticFields.push(newStaticField);
-  }
-  const relationalFields: Array<RelationalField> = [];
-  for (const relationalField of dataModel.attributes.RelationalFields) {
-    const newRelationalField: RelationalField = {
-      connection: relationalField.connection,
-      foreignKey: relationalField.foriegnKeyName,
-      type: relationalField.type as unknown as type,
-    };
-    relationalFields.push(newRelationalField);
-  }
+
+  const staticFields: Array<StaticField> = getStaticFields(dataModel);
+  const relationalFields: Array<RelationalField> = getRelationalFields(dataModel);
+  
   model.attributes = {
     relationalField: relationalFields,
     staticField: staticFields,
   };
-  model.restructure(models)
+
   models.push(model);
 }
-console.dir(models, { depth: null });
+
+for(const model of models){
+  model.restructure(models);
+}
+
+let initStringSchema=`datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+`;
+
+for(const model of models){
+  model.generateSchema();
+  initStringSchema+=model.initString;
+}
+
+
 
 // Create starter backend template
 const sourceFolderName = path.join(__dirname, "../src/assets/starter");
 const destFolderName = path.join(__dirname, "../app");
 
 fse.copySync(sourceFolderName, destFolderName);
+
+const schemaPath=path.join(__dirname, "../app/prisma/schema.prisma")
+
+fse.outputFileSync(schemaPath,initStringSchema);
