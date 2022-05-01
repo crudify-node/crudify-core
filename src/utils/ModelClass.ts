@@ -66,8 +66,8 @@ export class Model {
         connectedModel.schemaArray.push(
           `${this.name} ${this.name} ${
             relationalField.type === ("ONETOONE" as unknown as type)
-              ? "?"
-              : "[]"
+              ? "?\n"
+              : "[]\n"
           }`
         );
       }
