@@ -5,7 +5,7 @@ import { validateInput } from "./utils/validateInput";
 import { Model, RelationalField, StaticField, type } from "./utils/ModelClass";
 import { getRelationalFields, getStaticFields } from "./utils/getFields";
 import { formatSchema } from "@prisma/sdk";
-import {indexString} from "./assets/staticStrings/index"
+import { indexString } from "./assets/staticStrings/index";
 validateInput(data);
 
 const dataModels = data.Models;
@@ -28,7 +28,7 @@ for (const dataModel of dataModels) {
 
 for (const model of models) {
   model.restructure(models);
-  model.generateRoutes()
+  model.generateRoutes();
 }
 
 // console.log(JSON.stringify(models));
@@ -62,10 +62,36 @@ formatSchema({
   fse.outputFileSync(schemaPath, formattedInitStringSchema);
 });
 
-for(const model of models){
+for (const model of models) {
   const schemaPath = path.join(__dirname, `../app/src/routes/${model.name}/`);
-  const indexPath=schemaPath+"index.ts";
-  const controllerPath=schemaPath+"controller.ts";
+  const indexPath = schemaPath + "index.ts";
+  const controllerPath = schemaPath + "controller.ts";
   fse.outputFileSync(controllerPath, model.controllerString);
   fse.outputFileSync(indexPath, indexString);
 }
+
+const routerIndexString = `
+import { Request, Response, Router } from 'express'
+${models
+  .map((model) => {
+    return `import ${model.name}Router from './${model.name}'\n`;
+  })
+  .join("")}
+
+const router = Router()
+
+${models
+  .map((model) => {
+    return `router.use('/${model.name}', ${model.name}Router)\n`;
+  })
+  .join("")}
+
+router.get('/', (req: Request, res: Response) => {
+  res.send('hello world')
+})
+
+export default router
+`;
+
+const routerIndexPath = path.join(__dirname, `../app/src/routes/index.ts`);
+fse.outputFileSync(routerIndexPath, routerIndexString);

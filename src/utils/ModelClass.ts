@@ -56,7 +56,7 @@ export class Model {
       this.schemaArray.push(
         `\n ${relationalField.connection.toLowerCase()} ${
           relationalField.connection
-        } @relation(fields: [${relationalField.connection.toLowerCase()}Id], references: [id])`
+        } @relation(fields: [${relationalField.connection.toLowerCase()}Id], references: [id], onDelete: Cascade)`
       );
       const connectedModel: Model | undefined = models.find(
         (model) => model.name === relationalField.connection
@@ -129,13 +129,15 @@ export class Model {
       const entityId = Number(req.params.id);
       if (!entityId) return res.status(400).json({ data: "Invalid ID" });
     
-      const entity = await prisma.entity.findUnique({
+      const entity = await prisma.${this.name}.findUnique({
         where: { id: entityId },
       });
     
-      if (!entity) return res.status(404).json({ data: "Entity Not Found" });
+      if (!entity) return res.status(404).json({ data: "${
+        this.name
+      } Not Found" });
     
-      await prisma.entity.delete({
+      await prisma.${this.name}.delete({
         where: {
           id: entityId,
         },
@@ -148,12 +150,12 @@ export class Model {
       const skip = Number(req.query.skip) || 0;
       const take = Number(req.query.take) || 10;
     
-      const entitys = await prisma.entity.findMany({
+      const entities = await prisma.${this.name}.findMany({
         skip: skip,
         take: take,
       });
     
-      return res.json({ data: entitys });
+      return res.json({ data: entities });
     };
     
     export const handleGetEntityById = async (
@@ -161,38 +163,51 @@ export class Model {
       res: Response
     ) => {
       const entityId = Number(req.params.id);
-      const entity = await prisma.entity.findUnique({
+      const entity = await prisma.${this.name}.findUnique({
         where: { id: entityId },
       });
       return res.json({ data: entity });
     };
     
-    export const handle = async (
+    export const handleUpdateEntityById = async (
       req: Request<{ id: string }>,
       res: Response
     ) => {
       const entityId = Number(req.params.id);
-      const allowedUpdateFields: Array<keyof Prisma.EntityUpdateInput> = [
-        "title",
-        "token",
+      const allowedUpdateFields: Array<keyof Prisma.${this.name}UpdateInput> = [
+        "${[...this.staticFieldNames(), ...this.relationalFieldNames()].join(
+          `","`
+        )}"
       ];
     
       const updates = Object.keys(req.body);
     
-      const updateObject: Prisma.EntityUpdateInput = {};
+      const updateObject: Prisma.${this.name}UpdateInput = {};
     
       for (const update of updates) {
-        if (!allowedUpdateFields.includes(update as keyof Prisma.EntityUpdateInput))
+        if (!allowedUpdateFields.includes(update as keyof Prisma.${
+          this.name
+        }UpdateInput))
           return res.status(400).json({ data: "Invalid Arguments" });
-        else updateObject[update] = req.body[update];
+        
+        if (["${this.relationalFieldNames().join(`","`)}"].includes(update)) {
+          const entityConnection = {
+            connect: { id: req.body[update] },
+          };
+          const elem = await prisma[update].findUnique({
+            where: { id: req.body[update] },
+          });
+          if (!elem) return res.status(400).json({ data: "Entity not found" });
+          updateObject[update] = entityConnection;
+        } else updateObject[update] = req.body[update];
       }
     
-      const entityToBeUpdated = await prisma.entity.findUnique({
+      const entityToBeUpdated = await prisma.${this.name}.findUnique({
         where: { id: entityId },
       });
       if (!entityToBeUpdated)
         return res.status(404).json({ data: "Entity Not Found" });
-      const entity = await prisma.entity.update({
+      const entity = await prisma.${this.name}.update({
         where: {
           id: entityId,
         },
