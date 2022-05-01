@@ -1,0 +1,39 @@
+{
+    "Models": [
+        {
+            "name": "product",
+            "attributes": {
+                "StaticFields": [
+                    {
+                        "name": "name",
+                        "type": "String"
+                    }
+                ],
+                "RelationalFields": []
+            }
+        },
+        {
+            "name": "usar",
+            "attributes": {
+                "StaticFields": [
+                    {
+                        "name": "name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "abho",
+                        "type": "String",
+                        "isUnique": true
+                    }
+                ],
+                "RelationalFields": [
+                    {
+                        "connection": "product",
+                        "foriegnKeyName": "id",
+                        "type": "ONETOMANY"
+                    }
+                ]
+            }
+        }
+    ]
+}

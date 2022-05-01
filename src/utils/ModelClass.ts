@@ -82,7 +82,6 @@ export class Model {
     this.initString = `model ${this.name} {
       id Int @id @default(autoincrement())\n
     `;
-    console.log(this.schemaArray);
     for (const schemaString of this.schemaArray) {
       this.initString += schemaString;
     }

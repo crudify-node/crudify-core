@@ -6,9 +6,11 @@ import { getRelationalFields, getStaticFields } from "./utils/getFields";
 import { formatSchema } from "@prisma/sdk";
 import { indexString } from "./assets/staticStrings/index";
 export default async function crudify(
-  schemaInpPath: string
+  schemaFileName: string
 ) {
-  const data = await import(schemaInpPath);
+  schemaFileName = path.join(process.cwd(),schemaFileName);
+  const data = await import(schemaFileName);
+  console.log("Parsing your ER diagram...")
 
   validateInput(data);
 
@@ -35,7 +37,6 @@ export default async function crudify(
     model.generateRoutes();
   }
 
-  // console.log(JSON.stringify(models));
 
   let initStringSchema = `datasource db {
   provider = "postgresql"
@@ -51,14 +52,15 @@ generator client {
     model.generateSchema();
     initStringSchema += model.initString;
   }
+  console.log("Brace yourself, brewing your backend...")
 
   // Create starter backend template
   const sourceFolderName = path.join(__dirname, "../src/assets/starter");
-  const destFolderName = path.join(__dirname, "./app");
+  const destFolderName = path.join(process.cwd(), "/app");
 
   fse.copySync(sourceFolderName, destFolderName);
 
-  const schemaPath = path.join(__dirname, "./app/prisma/schema.prisma");
+  const schemaPath = path.join(process.cwd(), "/app/prisma/schema.prisma");
 
   formatSchema({
     schema: initStringSchema,
@@ -67,7 +69,7 @@ generator client {
   });
 
   for (const model of models) {
-    const schemaPath = path.join(__dirname, `./app/src/routes/${model.name}/`);
+    const schemaPath = path.join(process.cwd(), `/app/src/routes/${model.name}/`);
     const indexPath = schemaPath + "index.ts";
     const controllerPath = schemaPath + "controller.ts";
     fse.outputFileSync(controllerPath, model.controllerString);
@@ -96,7 +98,8 @@ router.get('/', (req: Request, res: Response) => {
 
 export default router
 `;
-
-  const routerIndexPath = path.join(__dirname, `./app/src/routes/index.ts`);
+  console.log("Your app can be found at app/ folder")
+  const routerIndexPath = path.join(process.cwd(), `/app/src/routes/index.ts`);
   fse.outputFileSync(routerIndexPath, routerIndexString);
+  console.log("Have fun!")
 }

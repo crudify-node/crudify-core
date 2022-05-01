@@ -1,6 +1,6 @@
 {
   "name": "crudify-dtu",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "main": "dist/index.js",
   "repository": "https://github.com/abhi-824/crudify.git",
   "author": "Abhi naman",
@@ -11,11 +11,13 @@
   },
   "dependencies": {
     "@prisma/sdk": "^3.13.0",
+    "chalk": "^5.0.1",
     "fs-extra": "^10.0.1",
     "module-alias": "^2.2.2",
     "typescript": "^4.6.3"
   },
   "devDependencies": {
+    "@types/chalk": "^2.2.0",
     "@types/fs-extra": "^9.0.13",
     "@types/node": "^17.0.24",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
@@ -36,5 +38,5 @@
     "*.js": "eslint --cache --fix",
     "*.{js,css,md}": "prettier --write"
   },
-  "bin":"dist/cli.js"
+  "bin": "dist/cli.js"
 }
