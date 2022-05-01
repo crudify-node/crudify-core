@@ -1,34 +1,52 @@
 {
   "Models": [
-    {
-      "name": "product",
-      "attributes": {
-        "StaticFields": [
-          {
-            "name": "name",
-            "type": "String"
-          }
-        ],
-        "RelationalFields": []
-      }
-    },
+    
     {
       "name": "user",
       "attributes": {
         "StaticFields": [
           {
-            "name": "name",
+            "name": "email",
+            "type": "String",
+            "isUnique": true
+          },
+          {
+            "name": "password",
             "type": "String"
           },
           {
-            "name": "abho",
-            "type": "String",
-            "isUnique": true
+            "name": "name",
+            "type": "String"
+          }
+        ],
+        "RelationalFields": [
+        ]
+      }
+    },
+    {
+      "name": "blog",
+      "attributes": {
+        "StaticFields": [
+          {
+            "name": "title",
+            "type": "String"
+          },
+          {
+            "name":"content",
+            "type":"String"
+          },
+          {
+            "name":"createdAt",
+            "type":"DateTime"
+          },
+          {
+            "name":"updatedAt",
+            "type":"DateTime"
           }
         ],
         "RelationalFields": [
           {
-            "connection": "product",
+            "connection": "user",
             "foriegnKeyName": "id",
             "type": "ONETOMANY"
           }

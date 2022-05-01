@@ -56,7 +56,7 @@ export class Model {
       this.schemaArray.push(
         `\n ${relationalField.connection.toLowerCase()} ${
           relationalField.connection
-        } @relation(fields: [${relationalField.connection.toLowerCase()}Id], references: [id], onDelete: Cascade)`
+        } @relation(fields: [${relationalField.connection.toLowerCase()}Id], references: [id], onDelete: Cascade)\n`
       );
       const connectedModel: Model | undefined = models.find(
         (model) => model.name === relationalField.connection
