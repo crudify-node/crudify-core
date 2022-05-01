@@ -19,3 +19,6 @@ router.delete('/:id', ce(handleDeleteEntity))
 
 export default router
 `;
+export const handleCreateEntityString=`
+  
+`

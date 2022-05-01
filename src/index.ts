@@ -5,7 +5,7 @@ import { validateInput } from "./utils/validateInput";
 import { Model, RelationalField, StaticField, type } from "./utils/ModelClass";
 import { getRelationalFields, getStaticFields } from "./utils/getFields";
 import { formatSchema } from "@prisma/sdk";
-
+import {indexString} from "./assets/staticStrings/index"
 validateInput(data);
 
 const dataModels = data.Models;
@@ -28,9 +28,10 @@ for (const dataModel of dataModels) {
 
 for (const model of models) {
   model.restructure(models);
+  model.generateRoutes()
 }
 
-console.log(JSON.stringify(models));
+// console.log(JSON.stringify(models));
 
 let initStringSchema = `datasource db {
   provider = "postgresql"
@@ -60,3 +61,11 @@ formatSchema({
 }).then((formattedInitStringSchema: string) => {
   fse.outputFileSync(schemaPath, formattedInitStringSchema);
 });
+
+for(const model of models){
+  const schemaPath = path.join(__dirname, `../app/src/routes/${model.name}/`);
+  const indexPath=schemaPath+"index.ts";
+  const controllerPath=schemaPath+"controller.ts";
+  fse.outputFileSync(controllerPath, model.controllerString);
+  fse.outputFileSync(indexPath, indexString);
+}

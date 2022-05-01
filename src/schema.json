@@ -1,7 +1,7 @@
 {
   "Models": [
     {
-      "name": "Product",
+      "name": "product",
       "attributes": {
         "StaticFields": [
           {
@@ -13,7 +13,7 @@
       }
     },
     {
-      "name": "User",
+      "name": "user",
       "attributes": {
         "StaticFields": [
           {
@@ -28,7 +28,7 @@
         ],
         "RelationalFields": [
           {
-            "connection": "Product",
+            "connection": "product",
             "foriegnKeyName": "id",
             "type": "ONETOMANY"
           }
