@@ -4,6 +4,7 @@ import * as path from "path";
 import { validateInput } from "./utils/validateInput";
 import { Model, RelationalField, StaticField, type } from "./utils/ModelClass";
 import { getRelationalFields, getStaticFields } from "./utils/getFields";
+import { formatSchema } from "@prisma/sdk";
 
 validateInput(data);
 
@@ -14,8 +15,9 @@ for (const dataModel of dataModels) {
   const model: Model = new Model(dataModel.name);
 
   const staticFields: Array<StaticField> = getStaticFields(dataModel);
-  const relationalFields: Array<RelationalField> = getRelationalFields(dataModel);
-  
+  const relationalFields: Array<RelationalField> =
+    getRelationalFields(dataModel);
+
   model.attributes = {
     relationalField: relationalFields,
     staticField: staticFields,
@@ -24,11 +26,13 @@ for (const dataModel of dataModels) {
   models.push(model);
 }
 
-for(const model of models){
+for (const model of models) {
   model.restructure(models);
 }
 
-let initStringSchema=`datasource db {
+console.log(JSON.stringify(models));
+
+let initStringSchema = `datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
@@ -38,12 +42,10 @@ generator client {
 }
 `;
 
-for(const model of models){
+for (const model of models) {
   model.generateSchema();
-  initStringSchema+=model.initString;
+  initStringSchema += model.initString;
 }
-
-
 
 // Create starter backend template
 const sourceFolderName = path.join(__dirname, "../src/assets/starter");
@@ -51,6 +53,10 @@ const destFolderName = path.join(__dirname, "../app");
 
 fse.copySync(sourceFolderName, destFolderName);
 
-const schemaPath=path.join(__dirname, "../app/prisma/schema.prisma")
+const schemaPath = path.join(__dirname, "../app/prisma/schema.prisma");
 
-fse.outputFileSync(schemaPath,initStringSchema);
+formatSchema({
+  schema: initStringSchema,
+}).then((formattedInitStringSchema: string) => {
+  fse.outputFileSync(schemaPath, formattedInitStringSchema);
+});

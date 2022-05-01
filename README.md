@@ -10,7 +10,6 @@
 
 ## Assumptions
 
-
 ## Future Development
 
 ## How to Contribute

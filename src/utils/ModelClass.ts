@@ -23,8 +23,7 @@ export class Model {
   constructor(name: string) {
     this.name = name as string;
   }
-  private staticFieldConversion(){
-
+  private staticFieldConversion() {
     for (const staticField of this.attributes.staticField) {
       this.schemaArray.push(
         `${staticField.name} ${staticField.type} ${
@@ -32,7 +31,6 @@ export class Model {
         } \n`
       );
     }
-
   }
   private relationalFieldConversion(models: Array<Model>) {
     for (const relationalField of this.attributes.relationalField) {
@@ -43,7 +41,7 @@ export class Model {
         `\n ${relationalField.connection.toLowerCase()} ${
           relationalField.connection
         } @relation(fields: [${relationalField.connection.toLowerCase()}Id], references: [id])`
-      ); 
+      );
       const connectedModel: Model | undefined = models.find(
         (model) => model.name === relationalField.connection
       );
@@ -51,7 +49,9 @@ export class Model {
       if (connectedModel) {
         connectedModel.schemaArray.push(
           `${this.name} ${this.name} ${
-            relationalField.type === ("ONETOONE" as unknown as type) ? "?" : "[]"
+            relationalField.type === ("ONETOONE" as unknown as type)
+              ? "?"
+              : "[]"
           }`
         );
       }
@@ -59,20 +59,18 @@ export class Model {
   }
   restructure(models: Array<Model>) {
     this.staticFieldConversion();
-    
-    this.relationalFieldConversion(models);
 
+    this.relationalFieldConversion(models);
   }
-  generateSchema(){
+  generateSchema() {
     this.initString = `model ${this.name} {
       id Int @id @default(autoincrement())\n
     `;
-    console.log(this.schemaArray)
-    for(const schemaString of this.schemaArray)
-    {
-      this.initString+=schemaString;
+    console.log(this.schemaArray);
+    for (const schemaString of this.schemaArray) {
+      this.initString += schemaString;
     }
-    this.initString+='\n}\n';
+    this.initString += "\n}\n";
   }
 }
 
