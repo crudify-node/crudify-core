@@ -1,4 +1,3 @@
-import * as data from "./schema.json";
 import * as fse from "fs-extra";
 import * as path from "path";
 import { validateInput } from "./utils/validateInput";
@@ -6,34 +5,39 @@ import { Model, RelationalField, StaticField, type } from "./utils/ModelClass";
 import { getRelationalFields, getStaticFields } from "./utils/getFields";
 import { formatSchema } from "@prisma/sdk";
 import { indexString } from "./assets/staticStrings/index";
-validateInput(data);
+export default async function crudify(
+  schemaInpPath: string
+) {
+  const data = await import(schemaInpPath);
 
-const dataModels = data.Models;
-const models: Array<Model> = [];
+  validateInput(data);
 
-for (const dataModel of dataModels) {
-  const model: Model = new Model(dataModel.name);
+  const dataModels = data.Models;
+  const models: Array<Model> = [];
 
-  const staticFields: Array<StaticField> = getStaticFields(dataModel);
-  const relationalFields: Array<RelationalField> =
-    getRelationalFields(dataModel);
+  for (const dataModel of dataModels) {
+    const model: Model = new Model(dataModel.name);
 
-  model.attributes = {
-    relationalField: relationalFields,
-    staticField: staticFields,
-  };
+    const staticFields: Array<StaticField> = getStaticFields(dataModel);
+    const relationalFields: Array<RelationalField> =
+      getRelationalFields(dataModel);
 
-  models.push(model);
-}
+    model.attributes = {
+      relationalField: relationalFields,
+      staticField: staticFields,
+    };
 
-for (const model of models) {
-  model.restructure(models);
-  model.generateRoutes();
-}
+    models.push(model);
+  }
 
-// console.log(JSON.stringify(models));
+  for (const model of models) {
+    model.restructure(models);
+    model.generateRoutes();
+  }
 
-let initStringSchema = `datasource db {
+  // console.log(JSON.stringify(models));
+
+  let initStringSchema = `datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
@@ -43,34 +47,34 @@ generator client {
 }
 `;
 
-for (const model of models) {
-  model.generateSchema();
-  initStringSchema += model.initString;
-}
+  for (const model of models) {
+    model.generateSchema();
+    initStringSchema += model.initString;
+  }
 
-// Create starter backend template
-const sourceFolderName = path.join(__dirname, "../src/assets/starter");
-const destFolderName = path.join(__dirname, "../app");
+  // Create starter backend template
+  const sourceFolderName = path.join(__dirname, "../src/assets/starter");
+  const destFolderName = path.join(__dirname, "./app");
 
-fse.copySync(sourceFolderName, destFolderName);
+  fse.copySync(sourceFolderName, destFolderName);
 
-const schemaPath = path.join(__dirname, "../app/prisma/schema.prisma");
+  const schemaPath = path.join(__dirname, "./app/prisma/schema.prisma");
 
-formatSchema({
-  schema: initStringSchema,
-}).then((formattedInitStringSchema: string) => {
-  fse.outputFileSync(schemaPath, formattedInitStringSchema);
-});
+  formatSchema({
+    schema: initStringSchema,
+  }).then((formattedInitStringSchema: string) => {
+    fse.outputFileSync(schemaPath, formattedInitStringSchema);
+  });
 
-for (const model of models) {
-  const schemaPath = path.join(__dirname, `../app/src/routes/${model.name}/`);
-  const indexPath = schemaPath + "index.ts";
-  const controllerPath = schemaPath + "controller.ts";
-  fse.outputFileSync(controllerPath, model.controllerString);
-  fse.outputFileSync(indexPath, indexString);
-}
+  for (const model of models) {
+    const schemaPath = path.join(__dirname, `./app/src/routes/${model.name}/`);
+    const indexPath = schemaPath + "index.ts";
+    const controllerPath = schemaPath + "controller.ts";
+    fse.outputFileSync(controllerPath, model.controllerString);
+    fse.outputFileSync(indexPath, indexString);
+  }
 
-const routerIndexString = `
+  const routerIndexString = `
 import { Request, Response, Router } from 'express'
 ${models
   .map((model) => {
@@ -93,5 +97,6 @@ router.get('/', (req: Request, res: Response) => {
 export default router
 `;
 
-const routerIndexPath = path.join(__dirname, `../app/src/routes/index.ts`);
-fse.outputFileSync(routerIndexPath, routerIndexString);
+  const routerIndexPath = path.join(__dirname, `./app/src/routes/index.ts`);
+  fse.outputFileSync(routerIndexPath, routerIndexString);
+}

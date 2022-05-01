@@ -1,9 +1,9 @@
 {
-  "name": "crudify",
+  "name": "crudify-dtu",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": "https://github.com/abhi-824/crudify.git",
-  "author": "Naman Gogia <namangogia2001@gmail.com>",
+  "author": "Abhi naman",
   "license": "MIT",
   "scripts": {
     "build": "yarn tsc",
@@ -35,5 +35,6 @@
     "*.{ts,js,css,md}": "prettier --write",
     "*.js": "eslint --cache --fix",
     "*.{js,css,md}": "prettier --write"
-  }
+  },
+  "bin":"dist/cli.js"
 }
