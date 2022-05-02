@@ -99,20 +99,20 @@ export class Model {
           ...this.relationalFieldNames(),
         ].join(",")} } = req.body;
         ${this.relationalFieldNames().map((relationalField) => {
-          return `const entityToBeConnected = await prisma.${relationalField}.findUnique({
+          return `const ${relationalField}ToBeConnected = await prisma.${relationalField}.findUnique({
             where: { id: ${relationalField} },
           });
       
-          if (!entityToBeConnected)
+          if (!${relationalField}ToBeConnected)
             return res.status(400).json({ data: "Entity not found" });
       `;
-        })}
+        }).join("")}
         
         const newEntityObject = {
           ${this.staticFieldNames().join(",")},
           ${this.relationalFieldNames().map((relationalField) => {
             return `${relationalField}: { connect: { id: ${relationalField} } },`;
-          })}
+          }).join("")}
          
         };
         const entity = await prisma.${this.name}.create({
