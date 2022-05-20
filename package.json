@@ -7,8 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn tsc",
-    "dev": "nodemon dist/cli.js \"schema.json\"",
-    "prepare": "yarn build"
+    "dev": "nodemon dist/cli.js \"schema.json\""
   },
   "dependencies": {
     "@prisma/sdk": "^3.13.0",
@@ -39,8 +38,5 @@
     "*.js": "eslint --cache --fix",
     "*.{js,css,md}": "prettier --write"
   },
-  "bin": "dist/cli.js",
-  "files": [
-    "dist"
-  ]
+  "bin": "dist/cli.js"
 }
