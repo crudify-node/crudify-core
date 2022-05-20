@@ -2,28 +2,36 @@ export enum type {
   ONETOONE,
   ONETOMANY,
 }
+
 export interface StaticField {
   name: string;
   type: string;
   isUnique?: boolean;
 }
+
 export interface RelationalField {
   connection: string;
   foreignKey: string;
   type: type;
 }
+
+export interface Attributes {
+  staticField: Array<StaticField>;
+  relationalField: Array<RelationalField>;
+}
+
 export class Model {
-  name!: string;
-  schemaArray: Array<string> = [];
-  initString!: string;
-  attributes!: {
-    staticField: Array<StaticField>;
-    relationalField: Array<RelationalField>;
-  };
-  controllerString!: string;
+  name: string;
+  attributes: Attributes = { staticField: [], relationalField: [] };
+  prismaModelArray: Array<string> = [];
+  prismaModel = "";
+  controllerString = "";
+  validationString = "";
+
   constructor(name: string) {
-    this.name = name as string;
+    this.name = name;
   }
+
   staticFieldNames() {
     const staticFieldNamesArray: Array<string> = [];
     for (const staticField of this.attributes.staticField) {
@@ -31,6 +39,7 @@ export class Model {
     }
     return staticFieldNamesArray;
   }
+
   relationalFieldNames() {
     const relationalFieldNamesArray: Array<string> = [];
     for (const relationalField of this.attributes.relationalField) {
@@ -41,19 +50,20 @@ export class Model {
 
   private staticFieldConversion() {
     for (const staticField of this.attributes.staticField) {
-      this.schemaArray.push(
+      this.prismaModelArray.push(
         `${staticField.name} ${staticField.type} ${
           staticField.isUnique ? "@unique" : ""
         } \n`
       );
     }
   }
+
   private relationalFieldConversion(models: Array<Model>) {
     for (const relationalField of this.attributes.relationalField) {
-      this.schemaArray.push(
+      this.prismaModelArray.push(
         `${relationalField.connection.toLowerCase()}Id Int `
       );
-      this.schemaArray.push(
+      this.prismaModelArray.push(
         `\n ${relationalField.connection.toLowerCase()} ${
           relationalField.connection
         } @relation(fields: [${relationalField.connection.toLowerCase()}Id], references: [id], onDelete: Cascade)\n`
@@ -63,7 +73,7 @@ export class Model {
       );
 
       if (connectedModel) {
-        connectedModel.schemaArray.push(
+        connectedModel.prismaModelArray.push(
           `${this.name} ${this.name} ${
             relationalField.type === ("ONETOONE" as unknown as type)
               ? "?\n"
@@ -79,13 +89,13 @@ export class Model {
     this.relationalFieldConversion(models);
   }
   generateSchema() {
-    this.initString = `model ${this.name} {
+    this.prismaModel = `model ${this.name} {
       id Int @id @default(autoincrement())\n
     `;
-    for (const schemaString of this.schemaArray) {
-      this.initString += schemaString;
+    for (const schemaString of this.prismaModelArray) {
+      this.prismaModel += schemaString;
     }
-    this.initString += "\n}\n";
+    this.prismaModel += "\n}\n";
   }
   generateRoutes() {
     this.controllerString = `
@@ -98,21 +108,25 @@ export class Model {
           ...this.staticFieldNames(),
           ...this.relationalFieldNames(),
         ].join(",")} } = req.body;
-        ${this.relationalFieldNames().map((relationalField) => {
-          return `const ${relationalField}ToBeConnected = await prisma.${relationalField}.findUnique({
+        ${this.relationalFieldNames()
+          .map((relationalField) => {
+            return `const ${relationalField}ToBeConnected = await prisma.${relationalField}.findUnique({
             where: { id: ${relationalField} },
           });
       
           if (!${relationalField}ToBeConnected)
             return res.status(400).json({ data: "Entity not found" });
       `;
-        }).join("")}
+          })
+          .join("")}
         
         const newEntityObject = {
           ${this.staticFieldNames().join(",")},
-          ${this.relationalFieldNames().map((relationalField) => {
-            return `${relationalField}: { connect: { id: ${relationalField} } },`;
-          }).join("")}
+          ${this.relationalFieldNames()
+            .map((relationalField) => {
+              return `${relationalField}: { connect: { id: ${relationalField} } },`;
+            })
+            .join("")}
          
         };
         const entity = await prisma.${this.name}.create({
@@ -216,6 +230,10 @@ export class Model {
       return res.json({ data: entity });
     };
     `;
+  }
+
+  generateUserInputValidator() {
+    this.validationString = ``;
   }
 }
 

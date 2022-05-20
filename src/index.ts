@@ -1,15 +1,16 @@
 import * as fse from "fs-extra";
 import * as path from "path";
 import { validateInput } from "./utils/validateInput";
-import { Model, RelationalField, StaticField, type } from "./utils/ModelClass";
+import { Model, RelationalField, StaticField } from "./utils/ModelClass";
 import { getRelationalFields, getStaticFields } from "./utils/getFields";
 import { formatSchema } from "@prisma/sdk";
 import { indexString } from "./assets/staticStrings/index";
+
 export default async function crudify(schemaFileName: string) {
   schemaFileName = path.join(process.cwd(), schemaFileName);
   const data = await import(schemaFileName);
-  console.log("Parsing your ER diagram...");
 
+  console.log("Parsing your ER diagram...");
   validateInput(data);
 
   const dataModels = data.Models;
@@ -47,7 +48,7 @@ generator client {
 
   for (const model of models) {
     model.generateSchema();
-    initStringSchema += model.initString;
+    initStringSchema += model.prismaModel;
   }
   console.log("Brace yourself, brewing your backend...");
 
