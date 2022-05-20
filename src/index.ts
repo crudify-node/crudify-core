@@ -5,12 +5,10 @@ import { Model, RelationalField, StaticField, type } from "./utils/ModelClass";
 import { getRelationalFields, getStaticFields } from "./utils/getFields";
 import { formatSchema } from "@prisma/sdk";
 import { indexString } from "./assets/staticStrings/index";
-export default async function crudify(
-  schemaFileName: string
-) {
-  schemaFileName = path.join(process.cwd(),schemaFileName);
+export default async function crudify(schemaFileName: string) {
+  schemaFileName = path.join(process.cwd(), schemaFileName);
   const data = await import(schemaFileName);
-  console.log("Parsing your ER diagram...")
+  console.log("Parsing your ER diagram...");
 
   validateInput(data);
 
@@ -37,7 +35,6 @@ export default async function crudify(
     model.generateRoutes();
   }
 
-
   let initStringSchema = `datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -52,7 +49,7 @@ generator client {
     model.generateSchema();
     initStringSchema += model.initString;
   }
-  console.log("Brace yourself, brewing your backend...")
+  console.log("Brace yourself, brewing your backend...");
 
   // Create starter backend template
   const sourceFolderName = path.join(__dirname, "../src/assets/starter");
@@ -69,7 +66,10 @@ generator client {
   });
 
   for (const model of models) {
-    const schemaPath = path.join(process.cwd(), `/app/src/routes/${model.name}/`);
+    const schemaPath = path.join(
+      process.cwd(),
+      `/app/src/routes/${model.name}/`
+    );
     const indexPath = schemaPath + "index.ts";
     const controllerPath = schemaPath + "controller.ts";
     fse.outputFileSync(controllerPath, model.controllerString);
@@ -98,8 +98,7 @@ router.get('/', (req: Request, res: Response) => {
 
 export default router
 `;
-  console.log("Your app can be found at app/ folder")
+  console.log("Your app can be found at app/ folder");
   const routerIndexPath = path.join(process.cwd(), `/app/src/routes/index.ts`);
   fse.outputFileSync(routerIndexPath, routerIndexString);
-  console.log("Have fun!")
 }

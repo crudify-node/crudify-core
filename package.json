@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn tsc",
-    "dev": "nodemon dist"
+    "dev": "nodemon dist/cli.js \"schema.json\""
   },
   "dependencies": {
     "@prisma/sdk": "^3.13.0",
