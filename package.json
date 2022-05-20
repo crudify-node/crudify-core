@@ -1,13 +1,14 @@
 {
   "name": "crudify-dtu",
-  "version": "1.1.0",
+  "version": "1.1.4",
   "main": "dist/index.js",
   "repository": "https://github.com/abhi-824/crudify.git",
   "author": "Abhi naman",
   "license": "MIT",
   "scripts": {
     "build": "yarn tsc",
-    "dev": "nodemon dist/cli.js \"schema.json\""
+    "dev": "nodemon dist/cli.js \"schema.json\"",
+    "prepare": "yarn build"
   },
   "dependencies": {
     "@prisma/sdk": "^3.13.0",
@@ -38,5 +39,8 @@
     "*.js": "eslint --cache --fix",
     "*.{js,css,md}": "prettier --write"
   },
-  "bin": "dist/cli.js"
+  "bin": "dist/cli.js",
+  "files": [
+    "dist"
+  ]
 }
