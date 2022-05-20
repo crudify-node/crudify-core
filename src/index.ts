@@ -4,7 +4,6 @@ import { validateInput } from "./utils/validateInput";
 import { Model, RelationalField, StaticField } from "./utils/ModelClass";
 import { getRelationalFields, getStaticFields } from "./utils/getFields";
 import { formatSchema } from "@prisma/sdk";
-import { indexString } from "./assets/staticStrings/index";
 
 export default async function crudify(schemaFileName: string) {
   schemaFileName = path.join(process.cwd(), schemaFileName);
@@ -35,6 +34,7 @@ export default async function crudify(schemaFileName: string) {
     model.restructure(models);
     model.generateRoutes();
     model.generateUserInputValidator();
+    model.generateRouter();
   }
 
   let initStringSchema = `datasource db {
@@ -76,7 +76,7 @@ generator client {
     const controllerPath = schemaPath + "controller.ts";
     const inputValidatorPath = schemaPath + "schema.ts";
     fse.outputFileSync(controllerPath, model.controllerString);
-    fse.outputFileSync(indexPath, indexString);
+    fse.outputFileSync(indexPath, model.routerString);
     fse.outputFileSync(inputValidatorPath, model.validationString);
   }
 
