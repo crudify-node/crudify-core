@@ -1,3 +1,5 @@
+import { joiMapping } from "./schema";
+
 export enum type {
   ONETOONE,
   ONETOMANY,
@@ -83,11 +85,12 @@ export class Model {
       }
     }
   }
+
   restructure(models: Array<Model>) {
     this.staticFieldConversion();
-
     this.relationalFieldConversion(models);
   }
+
   generateSchema() {
     this.prismaModel = `model ${this.name} {
       id Int @id @default(autoincrement())\n
@@ -97,13 +100,17 @@ export class Model {
     }
     this.prismaModel += "\n}\n";
   }
+
   generateRoutes() {
     this.controllerString = `
     import { Prisma } from ".prisma/client";
     import { Request, Response } from "express";
     import prisma from "~/lib/prisma";
+    import { schema } from "./schema";
     
     export const handleCreateEntity = async (req: Request, res: Response) => {
+      const { error } = schema.validate(req.body);
+      if (!error) {
         const { ${[
           ...this.staticFieldNames(),
           ...this.relationalFieldNames(),
@@ -133,6 +140,8 @@ export class Model {
           data: newEntityObject,
         });
         return res.json({ data: entity });
+      }
+      return res.status(500).json({ data: error.details[0].message });
     };
     
     export const handleDeleteEntity = async (
@@ -233,7 +242,21 @@ export class Model {
   }
 
   generateUserInputValidator() {
-    this.validationString = ``;
+    this.validationString = `
+    import Joi from 'joi'
+    export const schema = Joi.object().keys({
+      ${[
+        ...this.attributes.staticField.map((field) => {
+          return { name: field.name, type: field.type };
+        }),
+        ...this.attributes.relationalField.map((field) => {
+          return { name: field.connection + "Id", type: "Int" };
+        }),
+      ]
+        .map((fieldData) => `${fieldData.name}: ${joiMapping[fieldData.type]},`)
+        .join("\n")}
+    })
+    `;
   }
 }
 

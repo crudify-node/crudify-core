@@ -34,6 +34,7 @@ export default async function crudify(schemaFileName: string) {
   for (const model of models) {
     model.restructure(models);
     model.generateRoutes();
+    model.generateUserInputValidator();
   }
 
   let initStringSchema = `datasource db {
@@ -73,8 +74,10 @@ generator client {
     );
     const indexPath = schemaPath + "index.ts";
     const controllerPath = schemaPath + "controller.ts";
+    const inputValidatorPath = schemaPath + "schema.ts";
     fse.outputFileSync(controllerPath, model.controllerString);
     fse.outputFileSync(indexPath, indexString);
+    fse.outputFileSync(inputValidatorPath, model.validationString);
   }
 
   const routerIndexString = `
