@@ -52,9 +52,9 @@ generator client {
     initStringSchema += model.prismaModel;
   }
   console.log("Brace yourself, brewing your backend...");
-
+  console.log(__dirname);
   // Create starter backend template
-  const sourceFolderName = path.join(__dirname, "../src/assets/starter");
+  const sourceFolderName = path.join(__dirname, "/assets/starter");
   const destFolderName = path.join(process.cwd(), "/app");
 
   fse.copySync(sourceFolderName, destFolderName);
