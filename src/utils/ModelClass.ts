@@ -223,9 +223,14 @@ export class Model {
       res: Response
     ) => {
       const ${this.name}Id = Number(req.params.id);
+      if (isNaN(${this.name}Id))
+        return res.status(400).json({ data: "Invalid Id" });
+
       const ${this.name} = await prisma.${this.name}.findUnique({
         where: { id: ${this.name}Id },
       });
+      if (!${this.name})
+        return res.status(404).json({ data: "${modelName} not found" });
       return res.json({ data: ${this.name} });
     };
     
