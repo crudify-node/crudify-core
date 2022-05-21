@@ -100,6 +100,8 @@ export class Model {
     for (const schemaString of this.prismaModelArray) {
       this.prismaModel += schemaString;
     }
+    this.prismaModel += "createdAt DateTime @default(now())\n";
+    this.prismaModel += "updatedAt DateTime @default(now())";
     this.prismaModel += "\n}\n";
   }
 
@@ -266,6 +268,7 @@ export class Model {
       if (!${this.name}ToBeUpdated)
         return res.status(404).json({ data: "${modelName} Not Found" });
 
+      updateObject.updatedAt = new Date();
       const ${this.name} = await prisma.${this.name}.update({
         where: {
           id: ${this.name}Id,
