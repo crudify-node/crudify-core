@@ -59,7 +59,6 @@
         "RelationalFields": [
           {
             "connection": "user",
-            "foriegnKeyName": "id",
             "type": "ONETOMANY"
           },
           {

@@ -31,9 +31,12 @@ const isJsonString = (str: string) => {
 };
 
 export const validateInput = (inp: JSON) => {
-  const { error } = schema.validate(inp);
-  if(isJsonString(JSON.stringify(inp)) && !error){
-    return true;
+  if(isJsonString(JSON.stringify(inp))){
+    const { error } = schema.validate(inp);
+    if(!error)
+      return {message:"All good"};
+    const msg=error.details[0].message;
+    return {error:msg}
   }
-  return false;
+  return {error:"not a valid JSON"};
 };
