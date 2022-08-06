@@ -19,6 +19,7 @@ const model = Joi.object().keys({
 })
 const schema = Joi.object().keys({
   Models:Joi.array().items(model).required(),
+  default:Joi.any()
 });
 
 const isJsonString = (str: string) => {
