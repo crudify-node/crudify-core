@@ -1,3 +1,39 @@
-export const validateInput = (inp: any) => {
-  return 0;
+import Joi from "joi";
+const staticFieldSchema= Joi.object().keys({
+  name: Joi.string(),
+  type: Joi.string(),
+  isUnique: Joi.boolean().optional()
+})
+const relationalFieldSchema= Joi.object().keys({
+  connection: Joi.string().required(),
+  foriegnKeyName: Joi.string().required(),
+  type: Joi.string().valid("ONETOMANY","ONETOONE").required()
+})
+const attributeSchema = Joi.object().keys({
+  StaticFields: Joi.array().items(staticFieldSchema).required(),
+  RelationalFields: Joi.array().items(relationalFieldSchema).required(),
+});
+const model = Joi.object().keys({
+  name: Joi.string().required(),
+  attributes:attributeSchema
+})
+const schema = Joi.object().keys({
+  Models:Joi.array().items(model).required(),
+});
+
+const isJsonString = (str: string) => {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+};
+
+export const validateInput = (inp: JSON) => {
+  const { error } = schema.validate(inp);
+  if(isJsonString(JSON.stringify(inp)) && !error){
+    return true;
+  }
+  return false;
 };
