@@ -10,6 +10,7 @@ export interface StaticField {
   name: string;
   type: string;
   isUnique?: boolean;
+  toBeHashed?: boolean;
 }
 
 export interface RelationalField {
@@ -139,6 +140,7 @@ export class Model {
     import { Request, Response } from "express";
     import prisma from "~/lib/prisma";
     import { schema } from "./schema";
+    import * as bcrypt from "bcrypt";
     
     export const handleCreate${modelName} = async (req: Request, res: Response) => {
       const { error } = schema.validate(req.body);
@@ -164,7 +166,14 @@ export class Model {
           .join("")}
         
         const new${modelName}Object = {
-          ${this.staticFieldNames().join(",")},
+          ${this.attributes.staticField
+            .map((field) => {
+              if (field.toBeHashed === true)
+                return `${field.name}: await bcrypt.hash(${field.name}, 10)`;
+
+              return field.name;
+            })
+            .join(",")},
           ${this.relationalFieldNames()
             .map((relationalField) => {
               return `${relationalField}: { connect: { id: ${relationalField} } },`;
