@@ -72,6 +72,15 @@
       }
     }
   ],
+  "Enums":[
+    {
+      "name":"Role",
+      "fields":[
+        "USER",
+        "ADMIN"
+      ]
+    }
+  ],
   "Authentication": {
     "model": "user",
     "userFieldName": "email",

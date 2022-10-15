@@ -22,6 +22,7 @@ const model = Joi.object().keys({
 const schema = Joi.object().keys({
   Models:Joi.array().items(model).required(),
   Authentication:Joi.any(),
+  Enums:Joi.array(),
   default:Joi.any()
 });
 
