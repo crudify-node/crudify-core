@@ -2,7 +2,8 @@ import Joi from "joi";
 const staticFieldSchema= Joi.object().keys({
   name: Joi.string(),
   type: Joi.string(),
-  isUnique: Joi.boolean().optional()
+  isUnique: Joi.boolean().optional(),
+  toBeHashed:Joi.boolean().optional()
 })
 const relationalFieldSchema= Joi.object().keys({
   connection: Joi.string().required(),
@@ -19,6 +20,7 @@ const model = Joi.object().keys({
 })
 const schema = Joi.object().keys({
   Models:Joi.array().items(model).required(),
+  Authentication:Joi.any(),
   default:Joi.any()
 });
 
