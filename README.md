@@ -126,7 +126,8 @@ Shown below will be the corresponding schema for CRUDify
           },
           {
             "name": "password",
-            "type": "String"
+            "type": "String",
+            "toBeHashed": true
           },
           {
             "name": "name",
@@ -185,7 +186,12 @@ Shown below will be the corresponding schema for CRUDify
         ]
       }
     }
-  ]
+  ],
+  "Authentication": {
+    "model": "user",
+    "userFieldName": "email",
+    "passwordFieldName": "password"
+  }
 }
 ```
 
@@ -233,7 +239,8 @@ yarn dev
           {
             "name": "FIELD_NAME",
             "type": "FIELD_TYPE",
-            "isUnique": "true"
+            "isUnique": true,
+            "toBeHashed": true
           }
         ],
         "RelationalFields": [
@@ -245,7 +252,12 @@ yarn dev
         ]
       }
     }
-  ]
+  ],
+  "Authentication": {
+    "model": "YOUR_USER_MODEL_NAME",
+    "userFieldName": "YOUR_USERNAME_FIELD_NAME",
+    "passwordFieldName": "YOUR_PASSWORD_FIELD_NAME"
+  }
 }
 ```
 
@@ -257,7 +269,9 @@ yarn dev
 <br/>
 **FIELD_TYPE:** Type of the field (can be either `String` , `Boolean` , `Int` , `BigInt` , `Float` , `Decimal` , `DateTime` , `Json`)
 <br/>
-**isUnique:** Defaults to false, so can be omitted.
+**isUnique:** Boolean that signifies whether the unique constraint should be applied to the field. Defaults to `false`, so can be omitted.
+<br/>
+**toBeHashed:** Boolean that signifies whether the field's value should be hashed before saving to the database. Defaults to `false`, so can be omitted.
 <br/>
 **RelationalFields:** Array of JSON objects with each object representing a relational field
 <br/>
@@ -266,6 +280,17 @@ yarn dev
 **foriegnKeyName:** Name of the field in the `RELATED_TABLE_NAME` table which should be made the foreign key. It should be set as `id` to set the default auto-generated primary key of the `RELATED_TABLE_NAME` table as the foreign key
 <br/>
 **CONNECTION_TYPE:** Can be either `ONETOMANY` or `ONETOONE`. In the case of `ONETOMANY` connection, one record in `RELATED_TABLE_NAME` will be related to many `MODEL_NAME` records
+<br/>
+<br/>
+**USER AUTHENTICATION DETAILS**
+<br/>
+**Authentication:** An object containing information regarding user authentication. It is optional and should be added only if user authentication API endpoints are required (`login` and `getCurrentUser` currently)
+<br/>
+**model:** Name of the user model defined previously (case-sensitive)
+<br/>
+**userFieldName:** Name of the field in the user model corresponding to `username` (Must be a unique field)
+<br/>
+**passwordFieldName:** Name of the field in the user model corresponding to `password`
 
 <p>
 

@@ -8,6 +8,7 @@ export function getStaticFields(dataModel: any): Array<StaticField> {
       name: staticField.name,
       type: staticField.type,
       isUnique: staticField.isUnique,
+      toBeHashed: staticField.toBeHashed,
     };
     staticFields.push(newStaticField);
   }

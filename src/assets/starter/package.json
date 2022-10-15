@@ -5,11 +5,13 @@
   "license": "MIT",
   "dependencies": {
     "@prisma/client": "^3.11.1",
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "faker": "5.5.3",
     "joi": "^17.6.0",
+    "jsonwebtoken": "^8.5.1",
     "module-alias": "^2.2.2",
     "node": "^17.7.2",
     "prisma": "^3.11.1",
@@ -40,9 +42,11 @@
     "postinstall": "npm run build"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/faker": "5.5.9",
+    "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "^17.0.23",
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.17.0",
