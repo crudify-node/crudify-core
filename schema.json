@@ -7,7 +7,7 @@
           {
             "name": "email",
             "type": "String",
-            "isUnique": true
+            "defaultValue":"\"abhiyan\""  
           },
           {
             "name": "password",

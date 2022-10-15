@@ -3,7 +3,8 @@ const staticFieldSchema= Joi.object().keys({
   name: Joi.string(),
   type: Joi.string(),
   isUnique: Joi.boolean().optional(),
-  toBeHashed:Joi.boolean().optional()
+  toBeHashed:Joi.boolean().optional(),
+  defaultValue:Joi.string().optional()
 })
 const relationalFieldSchema= Joi.object().keys({
   connection: Joi.string().required(),
