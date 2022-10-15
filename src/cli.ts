@@ -4,8 +4,11 @@ import crudify from "./index";
 import { exec } from "child_process";
 
 async function main() {
-  await crudify(process.argv[2].toString());
-
+  const error = await crudify(process.argv[2].toString());
+  if (error) {
+    console.log(error);
+    return;
+  }
   console.log("Formatting your code");
 
   exec('prettier --write "app"', (error, stdout, stderr) => {

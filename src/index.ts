@@ -12,8 +12,8 @@ export default async function crudify(schemaFileName: string) {
   const data = await import(schemaFileName);
 
   console.log("Parsing your ER diagram...");
-  validateInput(data);
-
+  const { error } = validateInput(data);
+  if (error) return error;
   // Proccessing database models
   const dataModels = data.Models;
   const models: Array<Model> = [];
