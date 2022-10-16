@@ -56,7 +56,7 @@ export class Model {
 
   private staticFieldConversion() {
     for (const staticField of this.attributes.staticField) {
-      const defaultValue=`@default(${staticField.defaultValue})`;
+      const defaultValue = `@default(${staticField.defaultValue})`;
       // switch(staticField.type) {
       //   case "String":
       //     defaultValue=`@default("${staticField.defaultValue}")`;
@@ -64,16 +64,18 @@ export class Model {
       //   default:
       //     defaultValue=`@default(${staticField.defaultValue})`;
       // }
-      if(defaultValue&&staticField.isUnique)
-      { 
-        console.log("WARNING: You have given a default value to a uniqu field. It may give you error in future!")
+      if (defaultValue && staticField.isUnique) {
+        console.log(
+          "WARNING: You have given a default value to a uniqu field. It may give you error in future!"
+        );
       }
       this.prismaModelArray.push(
         `${staticField.name} ${staticField.type} ${
           staticField.isUnique ? "@unique" : ""
-        } ${staticField.defaultValue?defaultValue:""} \n`
+        } ${staticField.defaultValue ? defaultValue : ""} \n`
       );
     }
+    this.prismaModelArray.push("deleted Boolean @default(false)\n");
   }
 
   private relationalFieldConversion(models: Array<Model>) {

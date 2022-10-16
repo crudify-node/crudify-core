@@ -7,7 +7,7 @@
           {
             "name": "email",
             "type": "String",
-            "defaultValue":"\"abhiyan\""  
+            "defaultValue":"\"example@gmail.com\""  
           },
           {
             "name": "password",
