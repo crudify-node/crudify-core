@@ -36,7 +36,8 @@
         "StaticFields": [
           {
             "name": "title",
-            "type": "String"
+            "type": "String",
+            "defaultValue": "\"Untitled\""
           },
           {
             "name": "content",
@@ -78,6 +79,12 @@
           }
         ]
       }
+    }
+  ],
+  "Enums": [
+    {
+      "name": "Role",
+      "fields": ["USER", "ADMIN"]
     }
   ],
   "Authentication": {

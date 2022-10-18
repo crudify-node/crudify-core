@@ -6,6 +6,7 @@ const staticFieldSchema = Joi.object().keys({
   isUnique: Joi.boolean().optional(),
   toBeHashed: Joi.boolean().optional(),
   faker: Joi.any(),
+  defaultValue:Joi.string().optional()
 });
 
 const relationalFieldSchema = Joi.object().keys({
@@ -25,9 +26,10 @@ const model = Joi.object().keys({
 });
 
 const schema = Joi.object().keys({
-  Models: Joi.array().items(model).required(),
-  Authentication: Joi.any(),
-  default: Joi.any(),
+  Models:Joi.array().items(model).required(),
+  Authentication:Joi.any().optional(),
+  Enums:Joi.array().optional(),
+  default:Joi.any()
 });
 
 const isJsonString = (str: string) => {
