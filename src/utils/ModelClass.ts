@@ -32,6 +32,8 @@ export class Model {
   routerString = "";
   controllerString = "";
   validationString = "";
+  apiDocPathString = "";
+  apiDocDefinitionString = "";
 
   constructor(name: string) {
     this.name = name;
@@ -311,6 +313,209 @@ export class Model {
         .join("\n")}
     })
     `;
+  }
+  generateDocString() {
+    this.apiDocPathString = `"/${this.name}" : {
+      "get" : {
+          "summary" : "Get all the ${this.name}s",
+          "description": "Get all the ${this.name}s",
+          "produces": ["application/json"],
+          "parameters": [],
+          "tags":["${this.name}"],
+          "responses": {
+              "200": {
+                  "description": "successful operation",
+                  "schema": {
+                      "type": "array",
+                      "items": {
+                          "$ref": "#/definitions/${this.name}Response"
+                      }
+                  }
+              }
+          }
+      },
+      "post" : {
+          "summary" : "Save the ${this.name}",
+          "description": "Save the ${this.name}",
+          "produces": ["application/json"],
+          "consumes": ["application/json"],
+          "tags":["${this.name}"],
+          "parameters": [
+              {
+                  "in": "body",
+                  "name": "body",
+                  "description": "${this.name} object",
+                  "required": true,
+                  "schema": {
+                      "type": "object",
+                      "$ref": "#/definitions/${this.name}"                             
+                  }
+              }
+          ],
+          "responses": {
+              "200": {
+                  "description": "successful operation",
+                  "schema": {
+                      "type": "object",
+                      "properties": {
+                          "data":{
+                              "type":"object",
+                              "$ref": "#/definitions/${this.name}Response"
+                          }
+                      }
+                  }
+              },
+              "400": {
+                  "description": "Invalid request body",
+                  "schema": {
+                      "$ref": "#/definitions/InvalidResponse"
+                  }
+              }
+          }
+      }
+  },
+  "/${this.name}/{id}" : {
+      "get" : {
+          "summary" : "Get ${this.name} by id",
+          "description": "Get ${this.name} by id",
+          "produces": ["application/json"],
+          "parameters": [],
+          "tags":["${this.name}"],
+          "responses": {
+              "200": {
+                  "description": "successful operation",
+                  "schema": {
+                      "type": "object",
+                      "properties": {
+                          "data":{
+                              "type":"object",
+                              "$ref": "#/definitions/${this.name}Response"
+                          }
+                      }
+                  }
+              },
+              "400": {
+                  "description": "Invalid status value",
+                  "schema": {
+                      "$ref": "#/definitions/InvalidResponse"
+                  }
+              },
+              "404":{
+                  "description": "Couldn't Find",
+                  "schema": {
+                      "$ref": "#/definitions/InvalidResponse"
+                  }
+              }
+          }
+      },
+      "patch" : {
+          "summary" : "Update the ${this.name}",
+          "description": "Update the ${this.name}",
+          "produces": ["application/json"],
+          "tags":["${this.name}"],
+          "parameters": [
+              {
+                  "name": "id",
+                  "in": "path",
+                  "description": "${this.name} id that needs to be deleted",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "in": "body",
+                  "name": "body",
+                  "description": "${this.name} object",
+                  "required": true,
+                  "schema": {
+                      "type": "object",
+                      "$ref": "#/definitions/${this.name}"                             
+                  }
+              }
+          ],
+          "responses": {
+              "200": {
+                  "description": "successful operation",
+                  "schema": {
+                      "type": "object",
+                      "properties": {
+                          "data":{
+                              "type":"object",
+                              "$ref": "#/definitions/${this.name}Response"
+                          }
+                      }
+                  }
+              },
+              "400": {
+                  "description": "Invalid status value",
+                  "schema": {
+                      "$ref": "#/definitions/InvalidResponse"
+                  }
+              },
+              "404":{
+                  "description": "Couldn't Find",
+                  "schema": {
+                      "$ref": "#/definitions/InvalidResponse"
+                  }
+              }
+          }
+      },
+      "delete" : {
+          "summary" : "Delete the ${this.name}",
+          "description": "Delete the ${this.name}",
+          "produces": ["application/json"],
+          "tags":["${this.name}"],
+          "parameters": [
+              {
+                  "name": "id",
+                  "in": "path",
+                  "description": "${this.name} id that needs to be deleted",
+                  "required": true,
+                  "type": "string"
+              }
+          ],
+          "responses": {
+              "200": {
+                  "description": "successful operation",
+                  "schema": {
+                      "type": "obj",
+                      "$ref": "#/definitions/DeleteResponse"
+                  }
+              },
+              "400": {
+                  "description": "Invalid id",
+                  "schema": {
+                      "$ref": "#/definitions/InvalidResponse"
+                  }
+              },
+              "404":{
+                  "description": "Couldn't Find",
+                  "schema": {
+                      "$ref": "#/definitions/InvalidResponse"
+                  }
+              }
+          }
+      }
+  },\n`;
+    //TODO: relational fields in api doc definitions
+    this.apiDocDefinitionString = `"${this.name}Response": {
+      "type": "object",
+      "properties": {
+          "id": {
+               "type": "integer"
+          },
+          ${this.attributes.staticField.map((staticField) => {
+            return `"${staticField.name}":{\n "type":"${staticField.type}"\n} \n`;
+          })}
+      }
+  },
+  "${this.name}": {
+      "type": "object",
+      "properties": {
+        ${this.attributes.staticField.map((staticField) => {
+          return `"${staticField.name}":{\n "type":"${staticField.type}"\n} \n`;
+        })}
+      }
+  },`;
   }
 }
 

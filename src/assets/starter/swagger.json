@@ -1,0 +1,39 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Change this description yourself in swagger.json",
+        "version": "1.0.0",
+        "title": "Example Title",
+        "contact": {
+            "email": "crudify@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "schemes": ["http"],
+    "host": "localhost:5000",
+    "basePath": "/api",
+    "paths" : {
+    }, 
+    "definitions": {
+        "DeleteResponse":{
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                }
+            }
+        },
+        "InvalidResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                }
+            }
+
+        }
+    }
+}

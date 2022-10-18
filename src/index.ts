@@ -38,6 +38,7 @@ export default async function crudify(schemaFileName: string) {
     model.generateRoutes();
     model.generateUserInputValidator();
     model.generateRouter();
+    model.generateDocString();
   }
 
   let prismaSchema = `datasource db {
@@ -49,12 +50,17 @@ generator client {
   provider = "prisma-client-js"
 }
 `;
+  let swaggerDocPaths = "",
+    swaggerDocDefinitions = "";
 
   for (const model of models) {
     model.generateSchema();
     prismaSchema += model.prismaModel;
+    swaggerDocPaths += model.apiDocPathString;
+    swaggerDocDefinitions += model.apiDocDefinitionString;
   }
   console.log("Brace yourself, brewing your backend...");
+  console.log("Brace yourself, getting the docs ready...");
 
   // Duplicating the starter backend template
   const sourceFolderName = path.join(__dirname, "../src/assets/starter");
@@ -116,9 +122,13 @@ export default router
   import cors from "cors";
   import config from "./config";
   import apiRouter from "./routes";
+  import * as path from "path";
+  import swaggerUi from "swagger-ui-express";
+  import fs from 'fs'
   ${data.Authentication ? 'import authRouter from "./routes/auth";' : ""}
   
   export const app = Express();
+  const swaggerDocument = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'swagger.json'), 'utf-8'))
   
   app.use(
     cors({
@@ -131,6 +141,7 @@ export default router
   
   app.use("/api", apiRouter);
   ${data.Authentication ? 'app.use("/auth", authRouter);' : ""}
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   
   app.get("/", (req, res) => {
     res.send(
@@ -142,6 +153,50 @@ export default router
 
   const appRouterPath = path.join(process.cwd(), `/app/src/app.ts`);
   fse.outputFileSync(appRouterPath, appRouterString);
+
+  const swaggerDocString = `{
+    "swagger": "2.0",
+    "info": {
+        "description": "Change this description yourself in swagger.json",
+        "version": "1.0.0",
+        "title": "Example Title",
+        "contact": {
+            "email": "crudify@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "schemes": ["http"],
+    "host": "localhost:5000",
+    "basePath": "/api",
+    "paths" : {
+      ${swaggerDocPaths}
+    }, 
+    "definitions": {
+        ${swaggerDocDefinitions}
+        "DeleteResponse":{
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                }
+            }
+        },
+        "InvalidResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                }
+            }
+
+        }
+    }
+}`;
+  const swaggerJsonPath = path.join(process.cwd(), `/app/swagger.json`);
+  fse.outputFileSync(swaggerJsonPath, swaggerDocString);
 
   // Authentication
   if (data.Authentication) {
