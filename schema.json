@@ -7,12 +7,20 @@
           {
             "name": "email",
             "type": "String",
-            "isUnique": true
+            "isUnique": true,
+            "faker": {
+              "module": "internet",
+              "method": "email"
+            }
           },
           {
             "name": "password",
             "type": "String",
-            "toBeHashed": true
+            "toBeHashed": true,
+            "faker": {
+              "module": "internet",
+              "method": "password"
+            }
           },
           {
             "name": "name",

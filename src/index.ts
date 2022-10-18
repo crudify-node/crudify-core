@@ -3,6 +3,7 @@ import * as path from "path";
 import { validateInput } from "./utils/validateInput";
 import { Model, RelationalField, StaticField } from "./utils/ModelClass";
 import { Authentication } from "./utils/AuthClass";
+import { SeedDataGeneration } from "./utils/SeedClass";
 import { getRelationalFields, getStaticFields } from "./utils/getFields";
 import { formatSchema } from "@prisma/sdk";
 
@@ -148,4 +149,7 @@ export default router
     const { model, userFieldName, passwordFieldName } = data.Authentication;
     new Authentication(model, userFieldName, passwordFieldName);
   }
+
+  // Seed File Generation
+  new SeedDataGeneration(models);
 }

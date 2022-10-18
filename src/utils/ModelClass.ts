@@ -11,6 +11,10 @@ export interface StaticField {
   type: string;
   isUnique?: boolean;
   toBeHashed?: boolean;
+  faker?: {
+    module: string;
+    method: string;
+  };
 }
 
 export interface RelationalField {
