@@ -34,6 +34,7 @@ export class Model {
   validationString = "";
   apiDocPathString = "";
   apiDocDefinitionString = "";
+  private mapPrismaToSwagger = { String: "string", Int: "integer" };
 
   constructor(name: string) {
     this.name = name;
@@ -504,7 +505,14 @@ export class Model {
                "type": "integer"
           },
           ${this.attributes.staticField.map((staticField) => {
-            return `"${staticField.name}":{\n "type":"${staticField.type}"\n} \n`;
+            return `"${staticField.name}":{\n "type":"${
+              this.mapPrismaToSwagger[
+                staticField.type as keyof typeof this.mapPrismaToSwagger
+              ]
+            }"\n} \n`;
+          })},
+          ${this.attributes.relationalField.map((relationalField) => {
+            return `"${relationalField.connection}":{\n "type":"integer"\n} \n`;
           })}
       }
   },
@@ -512,7 +520,14 @@ export class Model {
       "type": "object",
       "properties": {
         ${this.attributes.staticField.map((staticField) => {
-          return `"${staticField.name}":{\n "type":"${staticField.type}"\n} \n`;
+          return `"${staticField.name}":{\n "type":"${
+            this.mapPrismaToSwagger[
+              staticField.type as keyof typeof this.mapPrismaToSwagger
+            ]
+          }"\n} \n`;
+        })},
+        ${this.attributes.relationalField.map((relationalField) => {
+          return `"${relationalField.connection}":{\n "type":"integer"\n} \n`;
         })}
       }
   },`;
