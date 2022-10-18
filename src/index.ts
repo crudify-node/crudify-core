@@ -5,6 +5,7 @@ import { Model, RelationalField, StaticField } from "./utils/ModelClass";
 import { Authentication } from "./utils/AuthClass";
 import { getRelationalFields, getStaticFields } from "./utils/getFields";
 import { formatSchema } from "@prisma/sdk";
+import { Enum } from "./utils/EnumClass";
 
 export default async function crudify(schemaFileName: string) {
   // Loading the user schema
@@ -16,11 +17,23 @@ export default async function crudify(schemaFileName: string) {
   if (error) return error;
   // Proccessing database models
   const dataModels = data.Models;
+  const dataEnums = data.Enums;
+
+  const enums: Array<Enum> = [];
+
+  for (const dataEnum of dataEnums) {
+    const _enum: Enum = new Enum(dataEnum.name, dataEnum.fields);
+    enums.push(_enum);
+  }
+  for (const _enum of enums) {
+    _enum.generatePrismaModel();
+  }
+
+  
   const models: Array<Model> = [];
 
   for (const dataModel of dataModels) {
     const model: Model = new Model(dataModel.name);
-
     const staticFields: Array<StaticField> = getStaticFields(dataModel);
     const relationalFields: Array<RelationalField> =
       getRelationalFields(dataModel);
@@ -33,6 +46,8 @@ export default async function crudify(schemaFileName: string) {
     models.push(model);
   }
 
+ 
+
   for (const model of models) {
     model.restructure(models);
     model.generateRoutes();
@@ -41,6 +56,7 @@ export default async function crudify(schemaFileName: string) {
     model.generateDocString();
   }
 
+  
   let prismaSchema = `datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -52,13 +68,16 @@ generator client {
 `;
   let swaggerDocPaths = "",
     swaggerDocDefinitions = "";
-
+  for (const _enum of enums) {
+    prismaSchema += _enum.prismaModel;
+  }
   for (const model of models) {
     model.generateSchema();
     prismaSchema += model.prismaModel;
     swaggerDocPaths += model.apiDocPathString;
     swaggerDocDefinitions += model.apiDocDefinitionString;
   }
+
   console.log("Brace yourself, brewing your backend...");
   console.log("Brace yourself, getting the docs ready...");
 
