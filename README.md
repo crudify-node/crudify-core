@@ -122,12 +122,20 @@ Shown below will be the corresponding schema for CRUDify
           {
             "name": "email",
             "type": "String",
-            "isUnique": true
+            "isUnique": true,
+            "faker": {
+              "module": "internet",
+              "method": "email"
+            }
           },
           {
             "name": "password",
             "type": "String",
-            "toBeHashed": true
+            "toBeHashed": true,
+            "faker": {
+              "module": "internet",
+              "method": "password"
+            }
           },
           {
             "name": "name",
@@ -240,7 +248,11 @@ yarn dev
             "name": "FIELD_NAME",
             "type": "FIELD_TYPE",
             "isUnique": true,
-            "toBeHashed": true
+            "toBeHashed": true,
+            "faker": {
+              "module": "MODULE_NAME",
+              "method": "FUNCTION_NAME"
+            }
           }
         ],
         "RelationalFields": [
@@ -272,6 +284,12 @@ yarn dev
 **isUnique:** Boolean that signifies whether the unique constraint should be applied to the field. Defaults to `false`, so can be omitted.
 <br/>
 **toBeHashed:** Boolean that signifies whether the field's value should be hashed before saving to the database. Defaults to `false`, so can be omitted.
+<br/>
+**faker:** Object representing the type of seed (fake) data that should be generated for the field. It is optional
+<br/>
+**module:** Name of the module (e.g. lorem) from https://fakerjs.dev/api/
+<br/>
+**method:** Name of the function to be called for the provided module [e.g. word (for lorem module)] from https://fakerjs.dev/api/
 <br/>
 **RelationalFields:** Array of JSON objects with each object representing a relational field
 <br/>
