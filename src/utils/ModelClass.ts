@@ -57,16 +57,9 @@ export class Model {
   private staticFieldConversion() {
     for (const staticField of this.attributes.staticField) {
       const defaultValue = `@default(${staticField.defaultValue})`;
-      // switch(staticField.type) {
-      //   case "String":
-      //     defaultValue=`@default("${staticField.defaultValue}")`;
-      //     break;
-      //   default:
-      //     defaultValue=`@default(${staticField.defaultValue})`;
-      // }
       if (defaultValue && staticField.isUnique) {
         console.log(
-          "WARNING: You have given a default value to a uniqu field. It may give you error in future!"
+          "WARNING: You have given a default value to a unique field. It may give you error in future!"
         );
       }
       this.prismaModelArray.push(

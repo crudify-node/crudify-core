@@ -7,7 +7,7 @@
           {
             "name": "email",
             "type": "String",
-            "defaultValue":"\"example@gmail.com\""  
+            "isUnique": true
           },
           {
             "name": "password",

@@ -20,6 +20,16 @@ export default async function crudify(schemaFileName: string) {
   const dataEnums = data.Enums;
 
   const enums: Array<Enum> = [];
+
+  for (const dataEnum of dataEnums) {
+    const _enum: Enum = new Enum(dataEnum.name, dataEnum.fields);
+    enums.push(_enum);
+  }
+  for (const _enum of enums) {
+    _enum.generatePrismaModel();
+  }
+
+  
   const models: Array<Model> = [];
 
   for (const dataModel of dataModels) {
@@ -36,10 +46,7 @@ export default async function crudify(schemaFileName: string) {
     models.push(model);
   }
 
-  for (const dataEnum of dataEnums) {
-    const _enum: Enum = new Enum(dataEnum.name, dataEnum.fields);
-    enums.push(_enum);
-  }
+ 
 
   for (const model of models) {
     model.restructure(models);
@@ -48,10 +55,7 @@ export default async function crudify(schemaFileName: string) {
     model.generateRouter();
   }
 
-  for (const _enum of enums) {
-    _enum.generatePrismaModel();
-  }
-
+  
   let prismaSchema = `datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -61,14 +65,15 @@ generator client {
   provider = "prisma-client-js"
 }
 `;
+  for (const _enum of enums) {
+    prismaSchema += _enum.prismaModel;
+  }
 
   for (const model of models) {
     model.generateSchema();
     prismaSchema += model.prismaModel;
   }
-  for (const _enum of enums) {
-    prismaSchema += _enum.prismaModel;
-  }
+
   console.log("Brace yourself, brewing your backend...");
 
   // Duplicating the starter backend template
@@ -131,9 +136,13 @@ export default router
   import cors from "cors";
   import config from "./config";
   import apiRouter from "./routes";
+  import * as path from "path";
+  import swaggerUi from "swagger-ui-express";
+  import fs from 'fs'
   ${data.Authentication ? 'import authRouter from "./routes/auth";' : ""}
   
   export const app = Express();
+  const swaggerDocument = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'swagger.json'), 'utf-8'))
   
   app.use(
     cors({
@@ -146,6 +155,7 @@ export default router
   
   app.use("/api", apiRouter);
   ${data.Authentication ? 'app.use("/auth", authRouter);' : ""}
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   
   app.get("/", (req, res) => {
     res.send(
