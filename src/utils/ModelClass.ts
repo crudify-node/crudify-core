@@ -24,7 +24,9 @@ export interface Attributes {
   staticField: Array<StaticField>;
   relationalField: Array<RelationalField>;
 }
-
+export interface MapPrismaToSwagger{
+  [key:string]:string
+}
 export class Model {
   name: string;
   attributes: Attributes = { staticField: [], relationalField: [] };
@@ -35,7 +37,7 @@ export class Model {
   validationString = "";
   apiDocPathString = "";
   apiDocDefinitionString = "";
-  private mapPrismaToSwagger = { String: "string", Int: "integer" };
+  private mapPrismaToSwagger:MapPrismaToSwagger = { String: "string", Int: "integer" };
 
   constructor(name: string) {
     this.name = name;
@@ -515,7 +517,7 @@ export class Model {
           ${this.attributes.staticField.map((staticField) => {
             return `"${staticField.name}":{\n "type":"${
               this.mapPrismaToSwagger[
-                staticField.type as keyof typeof this.mapPrismaToSwagger
+                staticField.type
               ]
             }"\n} \n`;
           })},
@@ -530,7 +532,7 @@ export class Model {
         ${this.attributes.staticField.map((staticField) => {
           return `"${staticField.name}":{\n "type":"${
             this.mapPrismaToSwagger[
-              staticField.type as keyof typeof this.mapPrismaToSwagger
+              staticField.type
             ]
           }"\n} \n`;
         })},

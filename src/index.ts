@@ -148,7 +148,7 @@ export default router
   
   export const app = Express();
   const swaggerDocument = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'swagger.json'), 'utf-8'))
-  
+  swaggerDocument.host=process.env.HOST
   app.use(
     cors({
       origin: "*",
