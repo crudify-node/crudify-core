@@ -33,6 +33,7 @@ export interface MapPrismaToSwagger{
 }
 export class Model {
   name: string;
+  softDelete=true;
   attributes: Attributes = { staticField: [], relationalField: [] };
   prismaModelArray: Array<string> = [];
   prismaModel = "";
@@ -43,8 +44,9 @@ export class Model {
   apiDocDefinitionString = "";
   private mapPrismaToSwagger:MapPrismaToSwagger = { String: "string", Int: "integer" };
 
-  constructor(name: string) {
+  constructor(name: string, softDelete=true) {
     this.name = name;
+    this.softDelete=softDelete;
   }
 
   staticFieldNames() {
@@ -157,6 +159,7 @@ export class Model {
     import { Request, Response } from "express";
     import prisma from "~/lib/prisma";
     import { schema } from "./schema";
+    import { exclude } from "~/lib/prisma";
     import * as bcrypt from "bcrypt";
     
     export const handleCreate${modelName} = async (req: Request, res: Response) => {
@@ -300,14 +303,18 @@ export class Model {
         return res.status(404).json({ data: "${modelName} Not Found" });
 
       updateObject.updatedAt = new Date();
-      const ${this.name} = await prisma.${this.name}.update({
+      await prisma.${this.name}.update({
         where: {
           id: ${this.name}Id,
         },
         data: updateObject,
       });
-    
-      return res.json({ data: ${this.name} });
+      const ${this.name} = await prisma.${this.name}.findUnique({
+        where: { id: ${this.name}Id },
+      });
+      if (!${this.name}) return res.status(404).json({ data: "${this.name} not found" });
+      const ${this.name}WithoutDeleted = exclude(${this.name}, "deleted");
+      return res.json({ data: ${this.name}WithoutDeleted });
     };
     `;
   }
@@ -511,7 +518,6 @@ export class Model {
           }
       }
   },\n`;
-    //TODO: relational fields in api doc definitions
     this.apiDocDefinitionString = `"${this.name}Response": {
       "type": "object",
       "properties": {
