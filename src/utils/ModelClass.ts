@@ -155,7 +155,7 @@ export class Model {
     const modelName = convertToUpperCamelCase(this.name);
 
     this.controllerString = `
-    import { Prisma } from ".prisma/client";
+    import { Prisma, ${this.name} } from ".prisma/client";
     import { Request, Response } from "express";
     import prisma from "~/lib/prisma";
     import { schema } from "./schema";
@@ -204,7 +204,8 @@ export class Model {
         const ${this.name} = await prisma.${this.name}.create({
           data: new${modelName}Object,
         });
-        return res.json({ data: ${this.name} });
+        const ${this.name}WithoutDeleted = exclude(${this.name}, 'deleted')
+        return res.json({ data: ${this.name}WithoutDeleted  });
       }
       return res.status(500).json({ data: error.details[0].message });
     };
@@ -243,8 +244,11 @@ export class Model {
         skip: skip,
         take: take,
       });
-    
-      return res.json({ data: ${this.name}s });
+      const  ${this.name}sWithoutDeleted:Array<Omit<${this.name},"deleted">>=[];
+      for(const  ${this.name} in  ${this.name}s) {
+        ${this.name}sWithoutDeleted.push(exclude( ${this.name}s[ ${this.name}],"deleted"));
+      }
+      return res.json({ data: ${this.name}sWithoutDeleted });
     };
     
     export const handleGet${modelName}ById = async (
@@ -260,7 +264,8 @@ export class Model {
       });
       if (!${this.name})
         return res.status(404).json({ data: "${modelName} not found" });
-      return res.json({ data: ${this.name} });
+      const ${this.name}WithoutDeleted = exclude(${this.name}, "deleted");
+      return res.json({ data: ${this.name}WithoutDeleted  });
     };
     
     export const handleUpdate${modelName}ById = async (
@@ -401,7 +406,15 @@ export class Model {
           "summary" : "Get ${this.name} by id",
           "description": "Get ${this.name} by id",
           "produces": ["application/json"],
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "${this.name} id that needs to be fetched",
+              "required": true,
+              "type": "string"
+          },
+          ],
           "tags":["${this.name}"],
           "responses": {
               "200": {
