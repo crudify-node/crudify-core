@@ -242,6 +242,7 @@ yarn dev
   "Models": [
     {
       "name": "MODEL_NAME",
+      "softDelete": false/true, // It is an optional field with default value as true
       "attributes": {
         "StaticFields": [
           {
@@ -265,6 +266,12 @@ yarn dev
       }
     }
   ],
+  "Enums": [
+    {
+      "name": "ENUM_NAME",
+      "fields": ["SAMPLE_FIELD1", "SAMPLE_FIELD2"]
+    }
+  ],
   "Authentication": {
     "model": "YOUR_USER_MODEL_NAME",
     "userFieldName": "YOUR_USERNAME_FIELD_NAME",
@@ -274,6 +281,8 @@ yarn dev
 ```
 
 **MODEL_NAME:** Name of the table (must be lowercase)
+<br/>
+**softDelete:** False if you don't want soft deletes enabled on a particular model. See more about soft deletes [here](https://en.wiktionary.org/wiki/soft_deletion).
 <br/>
 **StaticFields:** Array of JSON objects with each object representing a non-relational field
 <br/>
@@ -298,6 +307,8 @@ yarn dev
 **foriegnKeyName:** Name of the field in the `RELATED_TABLE_NAME` table which should be made the foreign key. It should be set as `id` to set the default auto-generated primary key of the `RELATED_TABLE_NAME` table as the foreign key
 <br/>
 **CONNECTION_TYPE:** Can be either `ONETOMANY` or `ONETOONE`. In the case of `ONETOMANY` connection, one record in `RELATED_TABLE_NAME` will be related to many `MODEL_NAME` records
+<br/>
+**Enums:** Specify to use enums in your database. See more about enums and their usage [here](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums) 
 <br/>
 <br/>
 **USER AUTHENTICATION DETAILS**
