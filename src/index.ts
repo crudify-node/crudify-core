@@ -32,9 +32,11 @@ export default async function crudify(schemaFileName: string) {
 
   
   const models: Array<Model> = [];
+  const softDeletionExcludedModels:Array<string>=[];
 
   for (const dataModel of dataModels) {
-    const model: Model = new Model(dataModel.name);
+    const model: Model = new Model(dataModel.name,dataModel.softDelete);
+    if(!model.softDelete)softDeletionExcludedModels.push(model.name)
     const staticFields: Array<StaticField> = getStaticFields(dataModel);
     const relationalFields: Array<RelationalField> =
       getRelationalFields(dataModel);
@@ -47,7 +49,6 @@ export default async function crudify(schemaFileName: string) {
     models.push(model);
   }
 
- 
 
   for (const model of models) {
     model.restructure(models);
@@ -67,6 +68,7 @@ generator client {
   provider = "prisma-client-js"
 }
 `;
+  
   let swaggerDocPaths = "",
     swaggerDocDefinitions = "";
   for (const _enum of enums) {
@@ -224,6 +226,9 @@ export default router
     new Authentication(model, userFieldName, passwordFieldName);
   }
 
+  const constantsFileContent=`export const softDeletionExcludedModels: Array<string> = [${softDeletionExcludedModels.map((model)=>{return `"${model}"`})}]; `
+  const constantsPath = path.join(process.cwd(), `/app/src/lib/constants.ts`);
+  fse.outputFileSync(constantsPath, constantsFileContent);
   // Seed File Generation
   new SeedDataGeneration(models);
 }

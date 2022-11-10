@@ -23,6 +23,7 @@ const attributeSchema = Joi.object().keys({
 const model = Joi.object().keys({
   name: Joi.string().required(),
   attributes: attributeSchema,
+  softDelete:Joi.boolean().optional().default(true)
 });
 
 const schema = Joi.object().keys({
