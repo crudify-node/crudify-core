@@ -7,6 +7,7 @@ import { SeedDataGeneration } from "./utils/SeedClass";
 import { getRelationalFields, getStaticFields } from "./utils/getFields";
 import { formatSchema } from "@prisma/sdk";
 import { Enum } from "./utils/EnumClass";
+import chalk from 'chalk';
 
 export default async function crudify(schemaFileName: string) {
   // Loading the user schema
@@ -82,7 +83,7 @@ generator client {
   }
 
   console.log("Brace yourself, brewing your backend...");
-  console.log("Brace yourself, getting the docs ready...");
+  console.log(chalk.green("Brace yourself, getting the docs ready..."));
 
   // Duplicating the starter backend template
   const sourceFolderName = path.join(__dirname, "../src/assets/starter");
@@ -135,7 +136,7 @@ router.get('/', (req: Request, res: Response) => {
 
 export default router
 `;
-  console.log("Your app can be found at app/ folder");
+console.log(chalk.greenBright("Your app can be found at app/ folder"));
   const routerIndexPath = path.join(process.cwd(), `/app/src/routes/index.ts`);
   fse.outputFileSync(routerIndexPath, routerIndexString);
 
