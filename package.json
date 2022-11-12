@@ -6,6 +6,7 @@
   "author": "Abhi naman",
   "license": "MIT",
   "scripts": {
+    "prepare": "husky install",
     "build": "yarn tsc",
     "dev": "nodemon dist/cli.js \"schema.json\""
   },
@@ -26,7 +27,7 @@
     "@typescript-eslint/parser": "^5.19.0",
     "eslint": "^8.13.0",
     "eslint-config-prettier": "^8.5.0",
-    "husky": "^7.0.4",
+    "husky": "^8.0.0",
     "lint-staged": "^12.3.8",
     "nodemon": "^2.0.15"
   },

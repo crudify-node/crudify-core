@@ -7,7 +7,7 @@ import { SeedDataGeneration } from "./utils/SeedClass";
 import { getRelationalFields, getStaticFields } from "./utils/getFields";
 import { formatSchema } from "@prisma/sdk";
 import { Enum } from "./utils/EnumClass";
-import chalk from 'chalk';
+import chalk from "chalk";
 
 export default async function crudify(schemaFileName: string) {
   // Loading the user schema
@@ -15,6 +15,7 @@ export default async function crudify(schemaFileName: string) {
   const data = await import(schemaFileName);
 
   console.log("Parsing your ER diagram...");
+
   const { error } = validateInput(data);
   if (error) return error;
   // Proccessing database models
@@ -31,13 +32,12 @@ export default async function crudify(schemaFileName: string) {
     _enum.generatePrismaModel();
   }
 
-  
   const models: Array<Model> = [];
-  const softDeletionExcludedModels:Array<string>=[];
+  const softDeletionExcludedModels: Array<string> = [];
 
   for (const dataModel of dataModels) {
-    const model: Model = new Model(dataModel.name,dataModel.softDelete);
-    if(!model.softDelete)softDeletionExcludedModels.push(model.name)
+    const model: Model = new Model(dataModel.name, dataModel.softDelete);
+    if (!model.softDelete) softDeletionExcludedModels.push(model.name);
     const staticFields: Array<StaticField> = getStaticFields(dataModel);
     const relationalFields: Array<RelationalField> =
       getRelationalFields(dataModel);
@@ -50,7 +50,6 @@ export default async function crudify(schemaFileName: string) {
     models.push(model);
   }
 
-
   for (const model of models) {
     model.restructure(models);
     model.generateRoutes();
@@ -59,7 +58,6 @@ export default async function crudify(schemaFileName: string) {
     model.generateDocString();
   }
 
-  
   let prismaSchema = `datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -69,7 +67,7 @@ generator client {
   provider = "prisma-client-js"
 }
 `;
-  
+
   let swaggerDocPaths = "",
     swaggerDocDefinitions = "";
   for (const _enum of enums) {
@@ -136,7 +134,7 @@ router.get('/', (req: Request, res: Response) => {
 
 export default router
 `;
-console.log(chalk.greenBright("Your app can be found at app/ folder"));
+  console.log(chalk.greenBright("Your app can be found at app/ folder"));
   const routerIndexPath = path.join(process.cwd(), `/app/src/routes/index.ts`);
   fse.outputFileSync(routerIndexPath, routerIndexString);
 
@@ -227,7 +225,11 @@ console.log(chalk.greenBright("Your app can be found at app/ folder"));
     new Authentication(model, userFieldName, passwordFieldName);
   }
 
-  const constantsFileContent=`export const softDeletionExcludedModels: Array<string> = [${softDeletionExcludedModels.map((model)=>{return `"${model}"`})}]; `
+  const constantsFileContent = `export const softDeletionExcludedModels: Array<string> = [${softDeletionExcludedModels.map(
+    (model) => {
+      return `"${model}"`;
+    }
+  )}]; `;
   const constantsPath = path.join(process.cwd(), `/app/src/lib/constants.ts`);
   fse.outputFileSync(constantsPath, constantsFileContent);
   // Seed File Generation
