@@ -1,8 +1,8 @@
 import Joi from "joi";
 
 const staticFieldSchema = Joi.object().keys({
-  name: Joi.string(),
-  type: Joi.string(),
+  name: Joi.string().required(),
+  type: Joi.string().required(),
   isUnique: Joi.boolean().optional(),
   toBeHashed: Joi.boolean().optional(),
   faker: Joi.any(),

@@ -1,6 +1,6 @@
 import { convertToUpperCamelCase } from "./common";
 import { joiMapping } from "./schema";
-
+import chalk from "chalk"
 export enum type {
   ONETOONE,
   ONETOMANY,
@@ -68,9 +68,9 @@ export class Model {
   private staticFieldConversion() {
     for (const staticField of this.attributes.staticField) {
       const defaultValue = `@default(${staticField.defaultValue})`;
-      if (defaultValue && staticField.isUnique) {
+      if (staticField.defaultValue && staticField.isUnique) {
         console.log(
-          "WARNING: You have given a default value to a unique field. It may give you error in future!"
+          chalk.yellow(`WARNING: You have given a default value to a unique field in ${this.name} model for ${staticField.name} attribute. It may give you error in future!`)
         );
       }
       this.prismaModelArray.push(
