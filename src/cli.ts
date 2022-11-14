@@ -2,7 +2,7 @@
 
 import crudify from "./index";
 import { exec } from "child_process";
-import chalk from "chalk"
+import chalk from "chalk";
 
 async function main() {
   const error = await crudify(process.argv[2].toString());
@@ -10,7 +10,7 @@ async function main() {
     console.log(chalk.red(error));
     return;
   }
-  console.log("Formatting your code");
+  console.log(chalk.italic.underline.bold("Formatting your code"));
 
   exec('prettier --write "app"', (error, stdout, stderr) => {
     if (error) {
@@ -22,7 +22,9 @@ async function main() {
       return;
     }
     // console.log(`stdout: ${stdout}`);
-    console.log(chalk.green("All done, have fun!"));
+    console.log(
+      chalk.greenBright("Your app can be found at app/ folder. Have fun!")
+    );
   });
 }
 
