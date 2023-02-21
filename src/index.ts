@@ -9,11 +9,8 @@ import { formatSchema } from "@prisma/sdk";
 import { Enum } from "./utils/EnumClass";
 import chalk from "chalk";
 
-export default async function crudify(schemaFileName: string) {
+export default async function crudify(data: any) {
   // Loading the user schema
-  schemaFileName = path.join(process.cwd(), schemaFileName);
-  const data = await import(schemaFileName);
-
   console.log("Parsing your ER diagram");
 
   const { error } = validateInput(data);

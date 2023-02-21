@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 
 import crudify from "./index";
+import * as path from "path";
 import { exec } from "child_process";
 import chalk from "chalk";
 
 async function main() {
-  const error = await crudify(process.argv[2].toString());
+  const schemaFileName = path.join(process.cwd(), process.argv[2].toString());
+  const data = await import(schemaFileName);
+
+  const error = await crudify(data);
   if (error) {
     console.log(chalk.red(error));
     return;
