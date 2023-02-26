@@ -50,7 +50,7 @@ export default async function crudify(data: any) {
   for (const model of models) {
     model.restructure(models);
     model.generateRoutes();
-    model.generateUserInputValidator();
+    model.generateUserInputValidator(enums);
     model.generateRouter();
     model.generateDocString();
   }

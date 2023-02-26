@@ -1,6 +1,7 @@
 import { convertToUpperCamelCase } from "./common";
 import { joiMapping } from "./schema";
-import chalk from "chalk"
+import chalk from "chalk";
+import { Enum } from "./EnumClass";
 export enum type {
   ONETOONE,
   ONETOMANY,
@@ -28,12 +29,12 @@ export interface Attributes {
   staticField: Array<StaticField>;
   relationalField: Array<RelationalField>;
 }
-export interface MapPrismaToSwagger{
-  [key:string]:string
+export interface MapPrismaToSwagger {
+  [key: string]: string;
 }
 export class Model {
   name: string;
-  softDelete=true;
+  softDelete = true;
   attributes: Attributes = { staticField: [], relationalField: [] };
   prismaModelArray: Array<string> = [];
   prismaModel = "";
@@ -42,11 +43,14 @@ export class Model {
   validationString = "";
   apiDocPathString = "";
   apiDocDefinitionString = "";
-  private mapPrismaToSwagger:MapPrismaToSwagger = { String: "string", Int: "integer" };
+  private mapPrismaToSwagger: MapPrismaToSwagger = {
+    String: "string",
+    Int: "integer",
+  };
 
-  constructor(name: string, softDelete=true) {
+  constructor(name: string, softDelete = true) {
     this.name = name;
-    this.softDelete=softDelete;
+    this.softDelete = softDelete;
   }
 
   staticFieldNames() {
@@ -70,7 +74,9 @@ export class Model {
       const defaultValue = `@default(${staticField.defaultValue})`;
       if (staticField.defaultValue && staticField.isUnique) {
         console.log(
-          chalk.yellow(`WARNING: You have given a default value to a unique field in ${this.name} model for ${staticField.name} attribute. It may give you error in future!`)
+          chalk.yellow(
+            `WARNING: You have given a default value to a unique field in ${this.name} model for ${staticField.name} attribute. It may give you error in future!`
+          )
         );
       }
       this.prismaModelArray.push(
@@ -246,7 +252,9 @@ export class Model {
       });
       const  ${this.name}sWithoutDeleted:Array<Omit<${this.name},"deleted">>=[];
       for(const  ${this.name} in  ${this.name}s) {
-        ${this.name}sWithoutDeleted.push(exclude( ${this.name}s[ ${this.name}],"deleted"));
+        ${this.name}sWithoutDeleted.push(exclude( ${this.name}s[ ${
+      this.name
+    }],"deleted"));
       }
       return res.json({ data: ${this.name}sWithoutDeleted });
     };
@@ -317,14 +325,21 @@ export class Model {
       const ${this.name} = await prisma.${this.name}.findUnique({
         where: { id: ${this.name}Id },
       });
-      if (!${this.name}) return res.status(404).json({ data: "${this.name} not found" });
+      if (!${this.name}) return res.status(404).json({ data: "${
+      this.name
+    } not found" });
       const ${this.name}WithoutDeleted = exclude(${this.name}, "deleted");
       return res.json({ data: ${this.name}WithoutDeleted });
     };
     `;
   }
 
-  generateUserInputValidator() {
+  generateUserInputValidator(enums: Array<Enum>) {
+    enums.map((enumObj) => {
+      joiMapping[enumObj.name] = `Joi.string().valid(${enumObj.fields
+        .map((enumVal) => `"${enumVal}"`)
+        .join(",")})`;
+    });
     this.validationString = `
     import Joi from 'joi'
     export const schema = Joi.object().keys({
@@ -336,7 +351,9 @@ export class Model {
           return { name: field.connection, type: "Int" };
         }),
       ]
-        .map((fieldData) => `${fieldData.name}: ${joiMapping[fieldData.type]},`)
+        .map((fieldData) => {
+          return `${fieldData.name}: ${joiMapping[fieldData.type]},`;
+        })
         .join("\n")}
     })
     `;
@@ -539,9 +556,7 @@ export class Model {
           },
           ${this.attributes.staticField.map((staticField) => {
             return `"${staticField.name}":{\n "type":"${
-              this.mapPrismaToSwagger[
-                staticField.type
-              ]
+              this.mapPrismaToSwagger[staticField.type]
             }"\n} \n`;
           })},
           ${this.attributes.relationalField.map((relationalField) => {
@@ -554,9 +569,7 @@ export class Model {
       "properties": {
         ${this.attributes.staticField.map((staticField) => {
           return `"${staticField.name}":{\n "type":"${
-            this.mapPrismaToSwagger[
-              staticField.type
-            ]
+            this.mapPrismaToSwagger[staticField.type]
           }"\n} \n`;
         })},
         ${this.attributes.relationalField.map((relationalField) => {
