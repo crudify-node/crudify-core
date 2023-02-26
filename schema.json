@@ -25,6 +25,10 @@
           {
             "name": "name",
             "type": "String"
+          },
+          {
+            "name": "role",
+            "type": "Role"
           }
         ],
         "RelationalFields": []
@@ -55,7 +59,7 @@
     },
     {
       "name": "review",
-      "softDelete":false,
+      "softDelete": false,
       "attributes": {
         "StaticFields": [
           {
@@ -93,5 +97,4 @@
     "userFieldName": "email",
     "passwordFieldName": "password"
   }
-
 }
