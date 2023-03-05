@@ -233,5 +233,5 @@ export default router
 
   // Seed File Generation
   console.log(chalk.white("Laying the groundwork for seeding your database"));
-  new SeedDataGeneration(models);
+  new SeedDataGeneration(models, enums);
 }

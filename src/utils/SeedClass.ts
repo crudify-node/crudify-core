@@ -1,4 +1,5 @@
 import { Model } from "./ModelClass";
+import { Enum } from "./EnumClass";
 import { convertToUpperCamelCase } from "./common";
 import * as fse from "fs-extra";
 import path from "path";
@@ -9,14 +10,16 @@ export type adjListType = {
 
 export class SeedDataGeneration {
   models: Array<Model>;
+  enums: Array<Enum>;
   adjacencyList: adjListType = {};
   visitedModels: Set<string>;
   topologicallySortedModels: Array<Model> = [];
   seedFilePath = path.join(process.cwd(), "/app/prisma/seed.ts");
   seedFileString = "";
 
-  constructor(models: Array<Model>) {
+  constructor(models: Array<Model>, enums: Array<Enum>) {
     this.models = models;
+    this.enums = enums;
 
     // Creating adjacency list
     for (const independentModel of this.models) {
@@ -86,14 +89,34 @@ export class SeedDataGeneration {
             return {
                 ${[
                   ...model.attributes.staticField.map((field) => {
-                    let { module, method } = prismaFakerMapping[field.type];
+                    // Get faker module and method for native Prisma types
+                    const faker = prismaFakerMapping[field.type];
 
-                    if (field?.faker?.module && field?.faker?.method) {
-                      module = field.faker.module;
-                      method = field.faker.method;
+                    if (faker !== undefined) {
+                      let { module, method } = faker;
+                      // Override module and method as per user input
+                      if (field?.faker?.module && field?.faker?.method) {
+                        module = field.faker.module;
+                        method = field.faker.method;
+                      }
+                      return `${field.name}: faker.${module}.${method}()`;
                     }
 
-                    return `${field.name}: faker.${module}.${method}()`;
+                    // Handling enums
+                    const userEnum = this.enums.find(
+                      (e) => e.name === field.type
+                    );
+                    if (userEnum !== undefined) {
+                      return `${
+                        field.name
+                      }: getRandomListElement([${userEnum.fields.map(
+                        (enumName) => `"${enumName}"`
+                      )}])`;
+                    }
+
+                    throw new Error(
+                      `Type of field: ${field.name} is neither a Prisma data type nor an enum`
+                    );
                   }),
                   ...model.attributes.relationalField.map((field) => {
                     return `${field.connection}: { connect: { id: ${field.connection}.id } }`;
