@@ -17,7 +17,7 @@ export default async function crudify(data: any) {
   if (error) return error;
   // Proccessing database models
   const dataModels = data.Models;
-  const dataEnums = data.Enums;
+  const dataEnums = data.Enums || [];
 
   const enums: Array<Enum> = [];
 
@@ -83,14 +83,14 @@ generator client {
   const sourceFolderName = path.join(__dirname, "../src/assets/starter");
   const destFolderName = path.join(process.cwd(), "/app");
 
-  fse.copySync(sourceFolderName, destFolderName);
+  await fse.copy(sourceFolderName, destFolderName);
 
   // Writing prisma schema in the output
   const schemaPath = path.join(process.cwd(), "/app/prisma/schema.prisma");
   formatSchema({
     schema: prismaSchema,
-  }).then((formattedPrismaSchema: string) => {
-    fse.outputFileSync(schemaPath, formattedPrismaSchema);
+  }).then(async (formattedPrismaSchema: string) => {
+    await fse.outputFile(schemaPath, formattedPrismaSchema);
   });
 
   // Writing each model's CRUD api endpoints to the output
@@ -102,9 +102,9 @@ generator client {
     const indexPath = schemaPath + "index.ts";
     const controllerPath = schemaPath + "controller.ts";
     const inputValidatorPath = schemaPath + "schema.ts";
-    fse.outputFileSync(controllerPath, model.controllerString);
-    fse.outputFileSync(indexPath, model.routerString);
-    fse.outputFileSync(inputValidatorPath, model.validationString);
+    await fse.outputFile(controllerPath, model.controllerString);
+    await fse.outputFile(indexPath, model.routerString);
+    await fse.outputFile(inputValidatorPath, model.validationString);
   }
 
   // Creating the model router ./src/routes/index.ts
@@ -132,7 +132,7 @@ export default router
 `;
 
   const routerIndexPath = path.join(process.cwd(), `/app/src/routes/index.ts`);
-  fse.outputFileSync(routerIndexPath, routerIndexString);
+  await fse.outputFile(routerIndexPath, routerIndexString);
 
   // Creating the primary router ./src/app.ts
   const appRouterString = `import Express from "express";
@@ -169,7 +169,7 @@ export default router
   `;
 
   const appRouterPath = path.join(process.cwd(), `/app/src/app.ts`);
-  fse.outputFileSync(appRouterPath, appRouterString);
+  await fse.outputFile(appRouterPath, appRouterString);
 
   const swaggerDocString = `{
     "swagger": "2.0",
@@ -215,7 +215,7 @@ export default router
 
   console.log(chalk.white("Preparing APIs and getting the API docs ready"));
   const swaggerJsonPath = path.join(process.cwd(), `/app/swagger.json`);
-  fse.outputFileSync(swaggerJsonPath, swaggerDocString);
+  await fse.outputFile(swaggerJsonPath, swaggerDocString);
 
   // Authentication
   if (data.Authentication) {
@@ -229,7 +229,7 @@ export default router
     }
   )}]; `;
   const constantsPath = path.join(process.cwd(), `/app/src/lib/constants.ts`);
-  fse.outputFileSync(constantsPath, constantsFileContent);
+  await fse.outputFile(constantsPath, constantsFileContent);
 
   // Seed File Generation
   console.log(chalk.white("Laying the groundwork for seeding your database"));
