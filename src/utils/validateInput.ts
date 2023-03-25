@@ -6,12 +6,13 @@ const staticFieldSchema = Joi.object().keys({
   isUnique: Joi.boolean().optional(),
   toBeHashed: Joi.boolean().optional(),
   faker: Joi.any(),
-  defaultValue:Joi.string().optional()
+  defaultValue: Joi.string().optional(),
 });
 
 const relationalFieldSchema = Joi.object().keys({
   connection: Joi.string().required(),
   foriegnKeyName: Joi.string().required(),
+  targetKeyName: Joi.string().optional(),
   type: Joi.string().valid("ONETOMANY", "ONETOONE").required(),
 });
 
@@ -23,14 +24,14 @@ const attributeSchema = Joi.object().keys({
 const model = Joi.object().keys({
   name: Joi.string().required(),
   attributes: attributeSchema,
-  softDelete:Joi.boolean().optional().default(true)
+  softDelete: Joi.boolean().optional().default(true),
 });
 
 const schema = Joi.object().keys({
-  Models:Joi.array().items(model).required(),
-  Authentication:Joi.any().optional(),
-  Enums:Joi.array().optional(),
-  default:Joi.any()
+  Models: Joi.array().items(model).required(),
+  Authentication: Joi.any().optional(),
+  Enums: Joi.array().optional(),
+  default: Joi.any(),
 });
 
 const isJsonString = (str: string) => {
