@@ -10,6 +10,7 @@ const staticFieldSchema = Joi.object().keys({
 });
 
 const relationalFieldSchema = Joi.object().keys({
+  name: Joi.string().required(),
   connection: Joi.string().required(),
   foriegnKeyName: Joi.string().required(),
   targetKeyName: Joi.string().optional(),

@@ -50,6 +50,7 @@
         ],
         "RelationalFields": [
           {
+            "name": "userId",
             "connection": "user",
             "foriegnKeyName": "id",
             "type": "ONETOMANY"
@@ -73,11 +74,19 @@
         ],
         "RelationalFields": [
           {
+            "name": "userAId",
             "connection": "user",
             "foriegnKeyName": "id",
             "type": "ONETOMANY"
           },
           {
+            "name": "userBId",
+            "connection": "user",
+            "foriegnKeyName": "id",
+            "type": "ONETOMANY"
+          },
+          {
+            "name": "blogId",
             "connection": "blog",
             "foriegnKeyName": "id",
             "type": "ONETOMANY"
