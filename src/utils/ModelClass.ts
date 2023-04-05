@@ -93,30 +93,40 @@ export class Model {
 
   private relationalFieldConversion(models: Array<Model>) {
     for (const relationalField of this.attributes.relationalField) {
-      this.prismaModelArray.push(`${relationalField.name} Int `);
+      this.prismaModelArray.push(`${relationalField.name}Id Int `);
       this.prismaModelArray.push(
-        `\n ${relationalField.connection.toLowerCase()}_${
-          relationalField.name
-        } ${
+        `\n ${relationalField.name} ${
           relationalField.connection
         } @relation(name: "${relationalField.connection.toLowerCase()}_${
           relationalField.name
         }_${this.name}", fields: [${
           relationalField.name
-        }], references: [id], onDelete: Cascade)\n`
+        }Id], references: [id], onDelete: Cascade)\n`
       );
       const connectedModel: Model | undefined = models.find(
         (model) => model.name === relationalField.connection
       );
 
+      let connectionCount = 0;
+      this.attributes.relationalField.forEach((field) => {
+        if (relationalField.connection === field.connection) connectionCount++;
+      });
+
       if (connectedModel) {
-        const oneSideConnectionString = `${this.name}_${relationalField.name} ${
-          this.name
-        } ${
+        let oneSideConnectionString = `${this.name} ${
           relationalField.type === ("ONETOONE" as unknown as type) ? "?" : "[]"
         } @relation(name: "${relationalField.connection.toLowerCase()}_${
           relationalField.name
         }_${this.name}")\n`;
+
+        if (connectionCount > 1)
+          oneSideConnectionString =
+            `${this.name}_${relationalField.name}` +
+            " " +
+            oneSideConnectionString;
+        else
+          oneSideConnectionString =
+            `${this.name}` + " " + oneSideConnectionString;
 
         connectedModel.prismaModelArray.push(oneSideConnectionString);
       }
@@ -211,7 +221,6 @@ export class Model {
             .join(",")},
           ${this.relationalFieldNames()
             .map((relationalFieldName) => {
-              console.log(relationalFieldName);
               return `${relationalFieldName}: { connect: { id: ${relationalFieldName} } },`;
             })
             .join("")}
