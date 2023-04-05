@@ -65,9 +65,7 @@ export class Model {
   relationalFieldNames() {
     const relationalFieldNamesArray: Array<string> = [];
     for (const relationalField of this.attributes.relationalField) {
-      relationalFieldNamesArray.push(
-        `${relationalField.connection}_${relationalField.name}`
-      );
+      relationalFieldNamesArray.push(`${relationalField.name}`);
     }
     return relationalFieldNamesArray;
   }
