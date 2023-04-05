@@ -8,4 +8,6 @@ export const joiMapping: JoiMapping = {
   Boolean: "Joi.bool()",
   Float: "Joi.number()",
   DateTime: "Joi.string()",
+  BigInt: "Joi.number()",
+  Decimal: "Joi.number()",
 };
