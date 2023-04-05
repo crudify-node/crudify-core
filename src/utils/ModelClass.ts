@@ -20,6 +20,7 @@ export interface StaticField {
 }
 
 export interface RelationalField {
+  name: string;
   connection: string;
   foreignKey: string;
   type: type;
@@ -64,7 +65,7 @@ export class Model {
   relationalFieldNames() {
     const relationalFieldNamesArray: Array<string> = [];
     for (const relationalField of this.attributes.relationalField) {
-      relationalFieldNamesArray.push(relationalField.connection);
+      relationalFieldNamesArray.push(`${relationalField.name}`);
     }
     return relationalFieldNamesArray;
   }
@@ -90,26 +91,42 @@ export class Model {
 
   private relationalFieldConversion(models: Array<Model>) {
     for (const relationalField of this.attributes.relationalField) {
+      this.prismaModelArray.push(`${relationalField.name}Id Int `);
       this.prismaModelArray.push(
-        `${relationalField.connection.toLowerCase()}Id Int `
-      );
-      this.prismaModelArray.push(
-        `\n ${relationalField.connection.toLowerCase()} ${
+        `\n ${relationalField.name} ${
           relationalField.connection
-        } @relation(fields: [${relationalField.connection.toLowerCase()}Id], references: [id], onDelete: Cascade)\n`
+        } @relation(name: "${relationalField.connection.toLowerCase()}_${
+          relationalField.name
+        }_${this.name}", fields: [${
+          relationalField.name
+        }Id], references: [id], onDelete: Cascade)\n`
       );
       const connectedModel: Model | undefined = models.find(
         (model) => model.name === relationalField.connection
       );
 
+      let connectionCount = 0;
+      this.attributes.relationalField.forEach((field) => {
+        if (relationalField.connection === field.connection) connectionCount++;
+      });
+
       if (connectedModel) {
-        connectedModel.prismaModelArray.push(
-          `${this.name} ${this.name} ${
-            relationalField.type === ("ONETOONE" as unknown as type)
-              ? "?\n"
-              : "[]\n"
-          }`
-        );
+        let oneSideConnectionString = `${this.name} ${
+          relationalField.type === ("ONETOONE" as unknown as type) ? "?" : "[]"
+        } @relation(name: "${relationalField.connection.toLowerCase()}_${
+          relationalField.name
+        }_${this.name}")\n`;
+
+        if (connectionCount > 1)
+          oneSideConnectionString =
+            `${this.name}_${relationalField.name}` +
+            " " +
+            oneSideConnectionString;
+        else
+          oneSideConnectionString =
+            `${this.name}` + " " + oneSideConnectionString;
+
+        connectedModel.prismaModelArray.push(oneSideConnectionString);
       }
     }
   }
@@ -201,8 +218,8 @@ export class Model {
             })
             .join(",")},
           ${this.relationalFieldNames()
-            .map((relationalField) => {
-              return `${relationalField}: { connect: { id: ${relationalField} } },`;
+            .map((relationalFieldName) => {
+              return `${relationalFieldName}: { connect: { id: ${relationalFieldName} } },`;
             })
             .join("")}
          

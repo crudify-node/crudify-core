@@ -10,7 +10,7 @@ export function getStaticFields(dataModel: any): Array<StaticField> {
       isUnique: staticField.isUnique,
       toBeHashed: staticField.toBeHashed,
       faker: staticField.faker,
-      defaultValue: staticField.defaultValue
+      defaultValue: staticField.defaultValue,
     };
     staticFields.push(newStaticField);
   }
@@ -22,6 +22,7 @@ export function getRelationalFields(dataModel: any): Array<RelationalField> {
 
   for (const relationalField of dataModel.attributes.RelationalFields) {
     const newRelationalField: RelationalField = {
+      name: relationalField.name,
       connection: relationalField.connection,
       foreignKey: relationalField.foriegnKeyName,
       type: relationalField.type as unknown as type,
