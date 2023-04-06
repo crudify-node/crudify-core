@@ -97,7 +97,7 @@ export class Model {
           relationalField.connection
         } @relation(name: "${relationalField.connection.toLowerCase()}_${
           relationalField.name
-        }_${this.name}", fields: [${
+        }Id_${this.name}", fields: [${
           relationalField.name
         }Id], references: [id], onDelete: Cascade)\n`
       );
@@ -115,7 +115,7 @@ export class Model {
           relationalField.type === ("ONETOONE" as unknown as type) ? "?" : "[]"
         } @relation(name: "${relationalField.connection.toLowerCase()}_${
           relationalField.name
-        }_${this.name}")\n`;
+        }Id_${this.name}")\n`;
 
         if (connectionCount > 1)
           oneSideConnectionString =
